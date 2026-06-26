@@ -9,9 +9,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 
 interface Message {
   id: string;
-  service_request_id: string;
+  request_id: string;
   sender_id: string;
-  receiver_id: string;
   content: string;
   created_at: Date | string;
 }
@@ -46,7 +45,7 @@ export function ChatBox({ requestId, currentUserId, initialMessages }: ChatBoxPr
           event: 'INSERT',
           schema: 'public',
           table: 'Message',
-          filter: `service_request_id=eq.${requestId}`,
+          filter: `request_id=eq.${requestId}`,
         },
         (payload) => {
           const newMsg = payload.new as Message;

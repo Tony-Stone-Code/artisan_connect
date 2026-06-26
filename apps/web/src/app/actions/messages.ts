@@ -11,7 +11,7 @@ export async function getMessages(requestId: string) {
 
   // Get messages for the request
   const messages = await prisma.message.findMany({
-    where: { service_request_id: requestId },
+    where: { request_id: requestId },
     orderBy: { created_at: 'asc' }
   })
 
@@ -43,9 +43,8 @@ export async function sendMessage(requestId: string, content: string) {
 
   const message = await prisma.message.create({
     data: {
-      service_request_id: requestId,
+      request_id: requestId,
       sender_id: user.id,
-      receiver_id: receiverId,
       content
     }
   })
