@@ -1,0 +1,348 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+enum Role {
+  CUSTOMER
+  ARTISAN
+  ADMIN
+  SUPERADMIN
+}
+
+enum IdentityStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum RequestStatus {
+  PENDING
+  QUOTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum EscrowStatus {
+  HELD
+  RELEASED
+  REFUNDED
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum EntityType {
+  USER
+  REVIEW
+  REQUEST
+  QUOTE
+}
+
+model User {
+  id             String    @id @default(uuid())
+  firebase_uid   String?   @unique // Renamed to firebase_uid, but we use Supabase Auth so it can map to auth.users.id
+  supabase_uid   String?   @unique
+  first_name     String
+  last_name      String
+  email          String    @unique
+  phone          String?
+  role           Role      @default(CUSTOMER)
+  avatar_url     String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  last_login     DateTime?
+
+  customer_profile CustomerProfile?
+  artisan_profile  ArtisanProfile?
+  admin_profile    AdminProfile?
+
+  notifications    Notification[]
+  reports_made     Report[]       @relation("Reporter")
+}
+
+model CustomerProfile {
+  id         String   @id @default(uuid())
+  user_id    String   @unique
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  address    String?
+  latitude   Float?
+  longitude  Float?
+
+  requests   ServiceRequest[]
+  reviews    Review[]
+  favorites  FavoriteArtisan[]
+}
+
+model ArtisanProfile {
+  id                 String   @id @default(uuid())
+  user_id            String   @unique
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  bio                String?
+  business_name      String?
+  address            String?
+  latitude           Float?
+  longitude          Float?
+  service_radius_km  Float    @default(10.0)
+  average_rating     Float    @default(0.0)
+  review_count       Int      @default(0)
+  is_verified        Boolean  @default(false)
+  is_available       Boolean  @default(true)
+  availability_status String  @default("AVAILABLE")
+
+  identity           ArtisanIdentity?
+  services           ArtisanService[]
+  portfolio          PortfolioItem[]
+  schedules          AvailabilitySchedule[]
+  requests           ServiceRequest[]
+  quotes             Quote[]
+  reviews            Review[]
+  favorites_by       FavoriteArtisan[]
+}
+
+model AdminProfile {
+  id         String   @id @default(uuid())
+  user_id    String   @unique
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  is_super   Boolean  @default(false)
+
+  audit_logs AuditLog[]
+  reports    Report[] @relation("AssignedAdmin")
+}
+
+model ArtisanIdentity {
+  id            String         @id @default(uuid())
+  artisan_id    String         @unique
+  artisan       ArtisanProfile @relation(fields: [artisan_id], references: [id], onDelete: Cascade)
+  ghana_card_no String?        @unique
+  card_image_url String?
+  selfie_url    String?
+  status        IdentityStatus @default(PENDING)
+  verified_at   DateTime?
+  notes         String?
+}
+
+model Category {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  description String?
+  icon_url    String?
+
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id          String   @id @default(uuid())
+  category_id String
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+
+  services    ArtisanService[]
+}
+
+model ArtisanService {
+  id             String          @id @default(uuid())
+  artisan_id     String
+  artisan        ArtisanProfile  @relation(fields: [artisan_id], references: [id], onDelete: Cascade)
+  subcategory_id String
+  subcategory    Subcategory     @relation(fields: [subcategory_id], references: [id], onDelete: Cascade)
+  description    String?
+  price_min      Decimal?        @db.Decimal(10, 2)
+  price_max      Decimal?        @db.Decimal(10, 2)
+  // embedding      Unsupported("vector(1024)")?
+}
+
+model PortfolioItem {
+  id          String         @id @default(uuid())
+  artisan_id  String
+  artisan     ArtisanProfile @relation(fields: [artisan_id], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  image_url   String
+  before_image_url String?
+  after_image_url  String?
+  created_at  DateTime       @default(now())
+}
+
+model AvailabilitySchedule {
+  id          String         @id @default(uuid())
+  artisan_id  String
+  artisan     ArtisanProfile @relation(fields: [artisan_id], references: [id], onDelete: Cascade)
+  day_of_week Int            // 0-6 (Sun-Sat)
+  start_time  DateTime       @db.Time()
+  end_time    DateTime       @db.Time()
+  is_active   Boolean        @default(true)
+}
+
+model ServiceRequest {
+  id            String          @id @default(uuid())
+  customer_id   String
+  customer      CustomerProfile @relation(fields: [customer_id], references: [id])
+  artisan_id    String
+  artisan       ArtisanProfile  @relation(fields: [artisan_id], references: [id])
+  title         String
+  description   String
+  status        RequestStatus   @default(PENDING)
+  preferred_date DateTime?
+  latitude      Float?
+  longitude     Float?
+  address       String?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+
+  quotes        Quote[]
+  review        Review?
+  messages      Message[]
+}
+
+model Quote {
+  id          String         @id @default(uuid())
+  request_id  String
+  request     ServiceRequest @relation(fields: [request_id], references: [id], onDelete: Cascade)
+  artisan_id  String
+  artisan     ArtisanProfile @relation(fields: [artisan_id], references: [id])
+  amount      Decimal        @db.Decimal(10, 2)
+  description String?
+  status      QuoteStatus    @default(PENDING)
+  expires_at  DateTime
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+
+  escrow      EscrowPayment?
+}
+
+model EscrowPayment {
+  id          String         @id @default(uuid())
+  quote_id    String         @unique
+  quote       Quote          @relation(fields: [quote_id], references: [id])
+  amount      Decimal        @db.Decimal(10, 2)
+  fee_amount  Decimal        @db.Decimal(10, 2)
+  status      EscrowStatus   @default(HELD)
+  payment_ref String         @unique
+  created_at  DateTime       @default(now())
+  released_at DateTime?
+}
+
+model Review {
+  id          String         @id @default(uuid())
+  request_id  String         @unique
+  request     ServiceRequest @relation(fields: [request_id], references: [id])
+  customer_id String
+  customer    CustomerProfile @relation(fields: [customer_id], references: [id])
+  artisan_id  String
+  artisan     ArtisanProfile @relation(fields: [artisan_id], references: [id])
+  rating      Int            @db.SmallInt
+  comment     String?
+  sentiment   String?        // Positive, Neutral, Negative
+  created_at  DateTime       @default(now())
+}
+
+model Message {
+  id          String         @id @default(uuid())
+  request_id  String
+  request     ServiceRequest @relation(fields: [request_id], references: [id], onDelete: Cascade)
+  sender_id   String
+  content     String
+  is_read     Boolean        @default(false)
+  created_at  DateTime       @default(now())
+}
+
+model FavoriteArtisan {
+  id          String         @id @default(uuid())
+  customer_id String
+  customer    CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  artisan_id  String
+  artisan     ArtisanProfile @relation(fields: [artisan_id], references: [id], onDelete: Cascade)
+  created_at  DateTime       @default(now())
+
+  @@unique([customer_id, artisan_id])
+}
+
+model Report {
+  id          String         @id @default(uuid())
+  reporter_id String
+  reporter    User           @relation("Reporter", fields: [reporter_id], references: [id])
+  target_id   String         // User ID or Review ID
+  target_type EntityType
+  reason      String
+  status      ReportStatus   @default(OPEN)
+  assigned_to String?
+  admin       AdminProfile?  @relation("AssignedAdmin", fields: [assigned_to], references: [id])
+  ai_summary  String?
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+}
+
+model AuditLog {
+  id          String         @id @default(uuid())
+  admin_id    String
+  admin       AdminProfile   @relation(fields: [admin_id], references: [id])
+  action      String
+  target_id   String?
+  target_type EntityType?
+  details     Json?
+  ip_address  String?
+  created_at  DateTime       @default(now())
+}
+
+model Notification {
+  id          String         @id @default(uuid())
+  user_id     String
+  user        User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  type        NotificationType @default(INFO)
+  is_read     Boolean        @default(false)
+  data        Json?
+  created_at  DateTime       @default(now())
+}
+
+model AiInteraction {
+  id          String         @id @default(uuid())
+  feature     String
+  user_id     String?
+  prompt_tokens Int
+  completion_tokens Int
+  latency_ms  Int
+  status      String         // SUCCESS, ERROR, FALLBACK
+  error       String?
+  created_at  DateTime       @default(now())
+}
+
+model EmailLog {
+  id          String         @id @default(uuid())
+  to_email    String
+  template    String
+  status      String         // SENT, FAILED
+  error       String?
+  provider_id String?
+  created_at  DateTime       @default(now())
+}
