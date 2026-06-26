@@ -6,7 +6,6 @@ import { sendMessage } from '@/app/actions/messages';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { ScrollArea } from '@/components/ui/ScrollArea';
 
 interface Message {
   id: string;
@@ -99,7 +98,7 @@ export function ChatBox({ requestId, currentUserId, initialMessages }: ChatBoxPr
       </CardHeader>
       
       <CardContent className="flex-1 p-0 overflow-hidden">
-        <ScrollArea className="h-full p-4" ref={scrollRef}>
+        <div className="h-full p-4 overflow-y-auto" ref={scrollRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground mt-4">
@@ -130,7 +129,7 @@ export function ChatBox({ requestId, currentUserId, initialMessages }: ChatBoxPr
               })
             )}
           </div>
-        </ScrollArea>
+        </div>
       </CardContent>
 
       <CardFooter className="p-4 border-t">
