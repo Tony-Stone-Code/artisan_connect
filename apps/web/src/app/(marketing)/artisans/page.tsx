@@ -4,6 +4,7 @@ import { ArtisanCard } from '@/components/artisans/ArtisanCard';
 import { ArtisanSearch } from '@/components/artisans/ArtisanSearch';
 import { ViewToggle } from '@/components/artisans/ViewToggle';
 import ArtisanMap from '@/components/map/ArtisanMap';
+import { Badge } from '@/components/ui/Badge';
 import { SearchX } from 'lucide-react';
 
 export const metadata = {
@@ -108,5 +109,3 @@ export default async function ArtisansPage({
     </div>
   );
 }
-
-import { Badge } from '@/components/ui/Badge';
