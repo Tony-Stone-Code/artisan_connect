@@ -7,6 +7,7 @@ import { updateProfile } from '@/app/actions/auth';
 import { uploadMedia, getIdentityStatus } from '@/app/actions/identity';
 import Link from 'next/link';
 import { ShieldAlert, ShieldCheck, Shield } from 'lucide-react';
+import { ArtisanLocationSettings } from '@/components/artisans/ArtisanLocationSettings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -161,6 +162,10 @@ export default function ProfilePage() {
             </Link>
           </CardContent>
         </Card>
+      )}
+
+      {user?.user_metadata?.role === 'ARTISAN' && (
+        <ArtisanLocationSettings />
       )}
 
       <Card>

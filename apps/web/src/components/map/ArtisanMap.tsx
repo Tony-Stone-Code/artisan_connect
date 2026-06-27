@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Link from 'next/link';
+import { Locate, Loader2 } from 'lucide-react';
 
 // Center of Accra roughly
 const INITIAL_CENTER: [number, number] = [-0.1869, 5.6037];
@@ -18,7 +19,11 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   // Filter artisans with coordinates
   const mapArtisans = artisans.filter(a => a.latitude && a.longitude);
@@ -52,6 +57,71 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
         </a>
       </div>
     `;
+  }, []);
+
+  const handleLocateMe = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { longitude, latitude } = position.coords;
+        setUserLocation([longitude, latitude]);
+        setIsLocating(false);
+
+        if (mapRef.current) {
+          mapRef.current.flyTo({
+            center: [longitude, latitude],
+            zoom: 13,
+            duration: 2000,
+          });
+
+          // Add or update user marker
+          if (!userMarkerRef.current) {
+            const el = document.createElement('div');
+            el.className = 'relative w-4 h-4 bg-blue-500 border-2 border-white rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)] z-10';
+            
+            // Add a pulsing animation ring
+            const pulseRing = document.createElement('div');
+            pulseRing.className = 'absolute -inset-2 bg-blue-500/40 rounded-full animate-ping';
+            el.appendChild(pulseRing);
+
+            userMarkerRef.current = new mapboxgl.Marker({ element: el })
+              .setLngLat([longitude, latitude])
+              .addTo(mapRef.current);
+          } else {
+            userMarkerRef.current.setLngLat([longitude, latitude]);
+          }
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError("Location access denied. Please enable it in browser settings.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Location information is unavailable.");
+            break;
+          case error.TIMEOUT:
+            setLocationError("The request to get user location timed out.");
+            break;
+          default:
+            setLocationError("An unknown error occurred getting location.");
+            break;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   }, []);
 
   // Initialize map
@@ -140,6 +210,35 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
           <div className="animate-pulse text-muted-foreground">Loading map...</div>
+        </div>
+      )}
+
+      {/* Locate Me Button */}
+      <button
+        onClick={handleLocateMe}
+        disabled={isLocating}
+        title="Find my location"
+        className="absolute bottom-6 right-6 z-10 bg-background border border-border shadow-md rounded-full p-3 text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+        aria-label="Locate me"
+      >
+        {isLocating ? (
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+        ) : (
+          <Locate className={`w-5 h-5 ${userLocation ? 'text-blue-500' : 'text-muted-foreground'}`} />
+        )}
+      </button>
+
+      {/* Location Error Toast */}
+      {locationError && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-destructive/95 text-destructive-foreground px-4 py-2 rounded-md shadow-lg text-sm flex items-center gap-3">
+          <span>{locationError}</span>
+          <button 
+            onClick={() => setLocationError(null)} 
+            className="text-white hover:text-gray-200"
+            aria-label="Close error"
+          >
+            ×
+          </button>
         </div>
       )}
     </div>

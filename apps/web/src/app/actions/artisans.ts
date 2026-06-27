@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import { generateObject } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -216,5 +217,38 @@ export async function getArtisanById(id: string) {
   } catch (error) {
     console.error(`Failed to fetch artisan with ID ${id}:`, error);
     return null;
+  }
+}
+
+export async function updateArtisanLocation(latitude: number, longitude: number) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { supabase_uid: user.id },
+      include: { artisan_profile: true }
+    });
+
+    if (!dbUser || !dbUser.artisan_profile) {
+      return { success: false, error: 'Artisan profile not found' };
+    }
+
+    await prisma.artisanProfile.update({
+      where: { id: dbUser.artisan_profile.id },
+      data: {
+        latitude,
+        longitude
+      }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error('Failed to update artisan location:', error);
+    return { success: false, error: error.message || 'Failed to update location' };
   }
 }
