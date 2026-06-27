@@ -43,7 +43,7 @@ export async function getArtisans(query?: string) {
       if (process.env.GEMINI_API_KEY) {
         try {
           const { object } = await generateObject({
-            model: google('gemini-1.5-flash'),
+            model: google('gemini-2.5-flash'),
             system: `You are an expert search assistant for a home services directory in Ghana. 
 Parse the user's search query to determine the required artisan profession.
 Extract the most relevant artisan profession needed (e.g. Plumber, Electrician, Carpenter). If the query is just a specific business name or person's name (e.g. "John", "Acme Corp"), return an empty string. Only return a profession if the user is describing a problem (e.g., "my sink is leaking") or directly asking for a trade.`,

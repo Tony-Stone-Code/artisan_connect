@@ -101,7 +101,7 @@ export async function generateDisputeSummary(reportId: string) {
 
   try {
     const { text } = await generateText({
-      model: google('gemini-1.5-flash'), // Using 1.5 flash as verified available in ai-sdk
+      model: google('gemini-2.5-flash'), // Upgraded to 2.5 flash
       prompt: `You are an impartial dispute resolution assistant for ArtisanConnect, a service marketplace. 
 A customer has filed a dispute with the following reason:
 "${report.reason}"
