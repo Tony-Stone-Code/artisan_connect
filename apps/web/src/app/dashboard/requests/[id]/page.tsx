@@ -105,7 +105,7 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
                   </>
                 )}
                 
-                {isArtisan && request.status === 'ACCEPTED' && (
+                {isArtisan && request.status === 'QUOTED' && (
                   <StatusButton status="IN_PROGRESS" label="Start Work" />
                 )}
 
@@ -113,7 +113,7 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
                   <StatusButton status="COMPLETED" label="Mark Completed" variant="outline" />
                 )}
 
-                {isCustomer && (request.status === 'PENDING' || request.status === 'ACCEPTED') && (
+                {isCustomer && (request.status === 'PENDING' || request.status === 'QUOTED') && (
                   <StatusButton status="CANCELLED" label="Cancel Request" variant="destructive" />
                 )}
                 

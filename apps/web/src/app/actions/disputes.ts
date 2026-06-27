@@ -93,11 +93,10 @@ export async function generateDisputeSummary(reportId: string) {
   // Fetch all chat messages for this request
   const messages = await prisma.message.findMany({
     where: { request_id: report.target_id },
-    orderBy: { created_at: 'asc' },
-    include: { sender: true }
+    orderBy: { created_at: 'asc' }
   })
 
-  const chatLogs = messages.map(m => `[${m.created_at.toISOString()}] ${m.sender.first_name} ${m.sender.last_name}: ${m.content}`).join('\n')
+  const chatLogs = messages.map(m => `[${m.created_at.toISOString()}] User ${m.sender_id}: ${m.content}`).join('\n')
 
   try {
     const { text } = await generateText({

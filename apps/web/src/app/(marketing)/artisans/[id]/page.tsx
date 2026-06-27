@@ -10,7 +10,7 @@ import { ReportButton } from '@/components/ui/ReportButton';
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const artisan = await getArtisanById(id);
-  if (!artisan) return { title: 'Artisan Not Found' };
+  if (!artisan || !artisan.user) return { title: 'Artisan Not Found' };
   
   const displayName = artisan.business_name || `${artisan.user.first_name} ${artisan.user.last_name}`;
   return {
@@ -23,7 +23,7 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
   const { id } = await params;
   const artisan = await getArtisanById(id);
 
-  if (!artisan) {
+  if (!artisan || !artisan.user) {
     notFound();
   }
 

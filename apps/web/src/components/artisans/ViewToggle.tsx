@@ -19,7 +19,7 @@ export function ViewToggle() {
   return (
     <div className="flex items-center gap-1 bg-muted p-1 rounded-lg border border-border">
       <Button 
-        variant={currentView === 'grid' ? 'default' : 'ghost'} 
+        variant={currentView === 'grid' ? 'primary' : 'ghost'} 
         size="sm" 
         onClick={() => setView('grid')}
         className="gap-2 px-4"
@@ -28,7 +28,7 @@ export function ViewToggle() {
         Grid
       </Button>
       <Button 
-        variant={currentView === 'map' ? 'default' : 'ghost'} 
+        variant={currentView === 'map' ? 'primary' : 'ghost'} 
         size="sm" 
         onClick={() => setView('map')}
         className="gap-2 px-4"

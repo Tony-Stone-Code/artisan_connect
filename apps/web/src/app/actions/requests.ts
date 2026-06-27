@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { sendNewRequestEmail, sendStatusUpdateEmail } from '@/lib/email'
+import { RequestStatus } from '@prisma/client'
 
 export async function getRequests() {
   const supabase = await createClient()
@@ -132,7 +133,7 @@ export async function getRequestById(id: string) {
   return { request }
 }
 
-export async function updateRequestStatus(id: string, status: 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED') {
+export async function updateRequestStatus(id: string, status: RequestStatus) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
