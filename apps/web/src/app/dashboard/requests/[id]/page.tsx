@@ -6,8 +6,15 @@ import { ChatBox } from '@/components/chat/ChatBox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { ReviewForm } from '@/components/reviews/ReviewForm';
+import { QuoteForm } from '@/components/requests/QuoteForm';
+import { QuoteList } from '@/components/requests/QuoteList';
+import { EscrowReleaseButton } from '@/components/requests/EscrowReleaseButton';
+import { DisputeForm } from '@/components/requests/DisputeForm';
+import { Star, AlertTriangle } from 'lucide-react';
 
-export default async function RequestDetailsPage({ params }: { params: { id: string } }) {
+export default async function RequestDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -16,8 +23,8 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
   }
 
   // Fetch data
-  const { request, error: reqError } = await getRequestById(params.id);
-  const { messages, error: msgError } = await getMessages(params.id);
+  const { request, error: reqError } = await getRequestById(id);
+  const { messages, error: msgError } = await getMessages(id);
 
   if (reqError || !request) {
     return (
@@ -28,8 +35,8 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
     );
   }
 
-  const isCustomer = request.customer.user_id === user.id;
-  const isArtisan = request.artisan.user_id === user.id;
+  const isCustomer = request.customer.user.supabase_uid === user.id;
+  const isArtisan = request.artisan.user.supabase_uid === user.id;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -38,6 +45,7 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
       case 'IN_PROGRESS': return 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20';
       case 'COMPLETED': return 'bg-green-500/10 text-green-500 hover:bg-green-500/20';
       case 'CANCELLED': return 'bg-red-500/10 text-red-500 hover:bg-red-500/20';
+      case 'DISPUTED': return 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/50';
       default: return 'bg-gray-500/10 text-gray-500 hover:bg-gray-500/20';
     }
   };
@@ -46,7 +54,7 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
   const StatusButton = ({ status, label, variant = "default" }: { status: any, label: string, variant?: any }) => (
     <form action={async () => {
       'use server';
-      await updateRequestStatus(params.id, status);
+      await updateRequestStatus(id, status);
     }}>
       <Button variant={variant} size="sm" type="submit">{label}</Button>
     </form>
@@ -92,7 +100,7 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
               <div className="flex flex-wrap gap-2">
                 {isArtisan && request.status === 'PENDING' && (
                   <>
-                    <StatusButton status="ACCEPTED" label="Accept Request" />
+                    <QuoteForm requestId={request.id} />
                     <StatusButton status="CANCELLED" label="Decline" variant="destructive" />
                   </>
                 )}
@@ -108,10 +116,72 @@ export default async function RequestDetailsPage({ params }: { params: { id: str
                 {isCustomer && (request.status === 'PENDING' || request.status === 'ACCEPTED') && (
                   <StatusButton status="CANCELLED" label="Cancel Request" variant="destructive" />
                 )}
+                
+                {isCustomer && (request.status === 'IN_PROGRESS' || request.status === 'COMPLETED') && (
+                  <DisputeForm requestId={request.id} />
+                )}
               </div>
             </div>
+
+            {request.status === 'DISPUTED' && (
+              <div className="mt-4 p-4 rounded-lg border border-destructive bg-destructive/10 text-destructive flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Request is under Dispute</p>
+                  <p className="text-sm mt-1">This request has been disputed and the escrow funds are frozen. An admin will review the chat logs and make a final ruling.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Quotes Section */}
+            {request.quotes && request.quotes.length > 0 && (
+              <QuoteList quotes={request.quotes} isCustomer={isCustomer} />
+            )}
+            
           </CardContent>
         </Card>
+
+        {/* Escrow Release Section */}
+        {isCustomer && request.status === 'COMPLETED' && request.quotes.some((q: any) => q.status === 'ACCEPTED' && q.escrow?.status === 'HELD') && (
+          <EscrowReleaseButton requestId={request.id} />
+        )}
+
+        {/* Review Section */}
+        {isCustomer && request.status === 'COMPLETED' && (
+          <div className="mt-6">
+            {request.review ? (
+              <Card className="border-border/50 shadow-sm bg-muted/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Your Review</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-1 mb-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star 
+                        key={star} 
+                        className={`w-5 h-5 ${
+                          star <= request.review!.rating 
+                            ? 'fill-amber-500 text-amber-500' 
+                            : 'fill-muted text-muted'
+                        }`} 
+                      />
+                    ))}
+                  </div>
+                  {request.review.comment ? (
+                    <p className="text-sm text-muted-foreground italic">"{request.review.comment}"</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground/60 italic">No comment provided.</p>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <ReviewForm 
+                requestId={request.id} 
+                artisanName={`${request.artisan.user.first_name} ${request.artisan.user.last_name}`} 
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right Column: Chat Interface */}

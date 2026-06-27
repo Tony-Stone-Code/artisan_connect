@@ -91,3 +91,39 @@ export async function updateProfile(data: {
     return { success: false, error: 'Failed to update profile in database' }
   }
 }
+
+export async function resetPassword(email: string, origin: string) {
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/callback?next=/reset-password`,
+    })
+
+    if (error) {
+      console.error('Reset password error:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send reset password email:', error)
+    return { success: false, error: 'An unexpected error occurred' }
+  }
+}
+
+export async function updatePassword(password: string) {
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.updateUser({ password })
+
+    if (error) {
+      console.error('Update password error:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to update password:', error)
+    return { success: false, error: 'An unexpected error occurred' }
+  }
+}

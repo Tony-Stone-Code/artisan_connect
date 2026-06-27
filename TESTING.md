@@ -115,3 +115,20 @@ You MUST enable Supabase Realtime for the `Message` table so that chat messages 
 6. Open a new incognito window, log in as the Artisan, and navigate to the same request.
 7. Verify that messages sent by either party appear instantly on the other screen.
 8. As the Artisan, test changing the Request Status (e.g., from `PENDING` to `ACCEPTED`, then `IN_PROGRESS`). Verify the Customer sees these status changes.
+
+---
+
+### 7. Escrow Payments & AI Dispute Resolution
+**Description:** Testing the end-to-end financial transaction lifecycle where customers pay an artisan via simulated Escrow, and testing the AI-assisted admin dispute mechanism when things go wrong.
+
+**Testing Steps:**
+1. Log in as an Artisan, go to `/dashboard/requests`, and find a `PENDING` request.
+2. Click **"Send Quote"** and submit a GHS amount for the job.
+3. Log out, and log in as the Customer who owns the request. Navigate to the request page.
+4. Review the quote and click **"Accept & Pay"**. Ensure the request transitions successfully to `IN_PROGRESS` and the quote status updates to `ACCEPTED`.
+5. At this point, click **"File a Dispute"**, provide a reason, and submit it. Verify the banner indicates funds are frozen in Escrow (`DISPUTED`).
+6. Log out and log in as an Admin user.
+7. Navigate to `/dashboard/admin/disputes`. Verify the dispute is listed.
+8. Click into the dispute and hit **"Generate Summary"**.
+9. Verify that Gemini 1.5 Flash correctly reads the chat logs and generates an unbiased summary of the dispute.
+10. Finalize the dispute by choosing **"Refund Customer"** or **"Release to Artisan"** and verify that the Escrow Payment status transitions correctly (`REFUNDED` or `RELEASED`).

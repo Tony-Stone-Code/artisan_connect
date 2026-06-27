@@ -30,6 +30,7 @@ enum RequestStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+  DISPUTED
 }
 
 enum QuoteStatus {
@@ -43,6 +44,7 @@ enum EscrowStatus {
   HELD
   RELEASED
   REFUNDED
+  DISPUTED
 }
 
 enum ReportStatus {

@@ -7,8 +7,9 @@ import { MapPin, Star, ShieldCheck, Briefcase, Calendar, MessageSquare, ArrowLef
 import Link from 'next/link';
 import { ReportButton } from '@/components/ui/ReportButton';
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const artisan = await getArtisanById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const artisan = await getArtisanById(id);
   if (!artisan) return { title: 'Artisan Not Found' };
   
   const displayName = artisan.business_name || `${artisan.user.first_name} ${artisan.user.last_name}`;
@@ -18,8 +19,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default async function ArtisanPublicProfile({ params }: { params: { id: string } }) {
-  const artisan = await getArtisanById(params.id);
+export default async function ArtisanPublicProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const artisan = await getArtisanById(id);
 
   if (!artisan) {
     notFound();

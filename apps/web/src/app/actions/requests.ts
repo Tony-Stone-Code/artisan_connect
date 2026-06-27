@@ -13,8 +13,8 @@ export async function getRequests() {
   const role = user.user_metadata?.role
 
   if (role === 'CUSTOMER') {
-    const customer = await prisma.customerProfile.findUnique({
-      where: { user_id: user.id }
+    const customer = await prisma.customerProfile.findFirst({
+      where: { user: { supabase_uid: user.id } }
     })
     
     if (!customer) return { requests: [] }
@@ -26,8 +26,8 @@ export async function getRequests() {
     })
     return { requests }
   } else if (role === 'ARTISAN') {
-    const artisan = await prisma.artisanProfile.findUnique({
-      where: { user_id: user.id }
+    const artisan = await prisma.artisanProfile.findFirst({
+      where: { user: { supabase_uid: user.id } }
     })
 
     if (!artisan) return { requests: [] }
@@ -53,8 +53,8 @@ export async function createRequest(data: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  const customer = await prisma.customerProfile.findUnique({
-    where: { user_id: user.id }
+  const customer = await prisma.customerProfile.findFirst({
+    where: { user: { supabase_uid: user.id } }
   })
 
   if (!customer) return { error: 'Customer profile not found' }
@@ -110,15 +110,20 @@ export async function getRequestById(id: string) {
     where: { id },
     include: {
       customer: { include: { user: true } },
-      artisan: { include: { user: true } }
+      artisan: { include: { user: true } },
+      review: true,
+      quotes: { 
+        orderBy: { created_at: 'desc' },
+        include: { escrow: true }
+      }
     }
   })
 
   if (!request) return { error: 'Request not found' }
 
   // Verify ownership
-  const isCustomer = request.customer.user_id === user.id
-  const isArtisan = request.artisan.user_id === user.id
+  const isCustomer = request.customer.user.supabase_uid === user.id
+  const isArtisan = request.artisan.user.supabase_uid === user.id
 
   if (!isCustomer && !isArtisan) {
     return { error: 'Forbidden' }
@@ -134,14 +139,17 @@ export async function updateRequestStatus(id: string, status: 'PENDING' | 'ACCEP
 
   const request = await prisma.serviceRequest.findUnique({
     where: { id },
-    include: { artisan: true, customer: true }
+    include: { 
+      artisan: { include: { user: true } }, 
+      customer: { include: { user: true } } 
+    }
   })
 
   if (!request) return { error: 'Request not found' }
 
   // Verify ownership (only the artisan should be able to update status normally, but let's allow customer to cancel)
-  const isArtisan = request.artisan.user_id === user.id
-  const isCustomer = request.customer.user_id === user.id
+  const isArtisan = request.artisan.user.supabase_uid === user.id
+  const isCustomer = request.customer.user.supabase_uid === user.id
 
   if (!isArtisan && !(isCustomer && status === 'CANCELLED')) {
     return { error: 'Forbidden' }

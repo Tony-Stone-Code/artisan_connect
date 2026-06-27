@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -10,24 +10,18 @@ export function ArtisanSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [isPending, startTransition] = useTransition();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check which button was clicked using the nativeEvent submitter
-    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
-    const isAiMode = submitter?.dataset?.ai === 'true';
-
-    if (isAiMode && query.trim()) {
-      router.push(`/match?prompt=${encodeURIComponent(query.trim())}`);
-      return;
-    }
-
-    if (query.trim()) {
-      router.push(`/artisans?q=${encodeURIComponent(query.trim())}`);
-    } else {
-      router.push('/artisans');
-    }
+    startTransition(() => {
+      if (query.trim()) {
+        router.push(`/artisans?q=${encodeURIComponent(query.trim())}`);
+      } else {
+        router.push('/artisans');
+      }
+    });
   };
 
   return (
@@ -36,26 +30,22 @@ export function ArtisanSearch() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <Input
           type="text"
-          id="search-query"
           name="q"
-          placeholder="Search by trade, or describe your problem..."
+          placeholder="Search by name, trade, or describe your problem..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10 pr-4 h-12 text-base rounded-full border-border/60 bg-background/50 backdrop-blur-sm focus-visible:ring-primary focus-visible:border-primary transition-all shadow-sm hover:shadow-md"
         />
       </div>
       <div className="flex gap-2">
-        <Button type="submit" size="lg" className="rounded-full px-6 h-12 shadow-md hover:shadow-lg transition-all hidden sm:flex">
-          Search
-        </Button>
         <Button 
           type="submit" 
-          variant="secondary"
           size="lg" 
-          data-ai="true"
-          className="rounded-full px-6 h-12 shadow-md hover:shadow-lg transition-all border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary gap-2"
+          isLoading={isPending}
+          className="rounded-full px-4 sm:px-8 h-12 shadow-md hover:shadow-lg transition-all"
         >
-          <span className="text-lg">✨</span> Ask AI
+          <span className="hidden sm:inline">{isPending ? 'Searching...' : 'Search'}</span>
+          <span className="sm:hidden"><Search className="w-5 h-5" /></span>
         </Button>
       </div>
     </form>

@@ -41,8 +41,8 @@ export async function getIdentityStatus() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const profile = await prisma.artisanProfile.findUnique({
-    where: { user_id: user.id },
+  const profile = await prisma.artisanProfile.findFirst({
+    where: { user: { supabase_uid: user.id } },
     include: { identity: true }
   })
 
@@ -58,8 +58,8 @@ export async function submitIdentity(data: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  const profile = await prisma.artisanProfile.findUnique({
-    where: { user_id: user.id }
+  const profile = await prisma.artisanProfile.findFirst({
+    where: { user: { supabase_uid: user.id } }
   })
 
   if (!profile) return { error: 'Artisan profile not found' }

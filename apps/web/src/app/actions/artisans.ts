@@ -1,6 +1,13 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { generateObject } from 'ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { z } from 'zod';
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export async function getArtisans(query?: string) {
   try {
@@ -14,12 +21,60 @@ export async function getArtisans(query?: string) {
     };
 
     if (query) {
-      whereClause.OR = [
+      const orConditions: any[] = [
         { business_name: { contains: query, mode: 'insensitive' } },
-        { user: { first_name: { contains: query, mode: 'insensitive' } } },
-        { user: { last_name: { contains: query, mode: 'insensitive' } } },
         { bio: { contains: query, mode: 'insensitive' } },
       ];
+
+      // Handle split names (e.g. "Small Boat" matching first_name="Small", last_name="Boat")
+      const queryParts = query.split(' ').filter(p => p.length > 0);
+      if (queryParts.length > 0) {
+        orConditions.push({
+          AND: queryParts.map(part => ({
+            OR: [
+              { user: { first_name: { contains: part, mode: 'insensitive' } } },
+              { user: { last_name: { contains: part, mode: 'insensitive' } } }
+            ]
+          }))
+        });
+      }
+
+      // Use AI to extract semantic intent from the query
+      if (process.env.GEMINI_API_KEY) {
+        try {
+          const { object } = await generateObject({
+            model: google('gemini-1.5-flash'),
+            system: `You are an expert search assistant for a home services directory in Ghana. 
+Parse the user's search query to determine the required artisan profession.
+Extract the most relevant artisan profession needed (e.g. Plumber, Electrician, Carpenter). If the query is just a specific business name or person's name (e.g. "John", "Acme Corp"), return an empty string. Only return a profession if the user is describing a problem (e.g., "my sink is leaking") or directly asking for a trade.`,
+            prompt: query,
+            schema: z.object({
+              profession: z.string().describe('The type of artisan needed (e.g., Plumber, Electrician, Carpenter), or empty string if not applicable'),
+            }),
+          });
+
+          if (object.profession && object.profession.trim() !== '') {
+            // Add the AI-extracted profession to the search criteria
+            orConditions.push({
+              services: {
+                some: {
+                  subcategory: {
+                    OR: [
+                      { name: { contains: object.profession, mode: 'insensitive' } },
+                      { category: { name: { contains: object.profession, mode: 'insensitive' } } }
+                    ]
+                  }
+                }
+              }
+            });
+          }
+        } catch (aiError) {
+          console.error('AI intent extraction failed:', aiError);
+          // Fail silently and fall back to standard text search
+        }
+      }
+
+      whereClause.OR = orConditions;
     }
 
     const artisans = await prisma.artisanProfile.findMany({
@@ -69,62 +124,95 @@ export async function getArtisans(query?: string) {
 
 export async function getArtisanById(id: string) {
   try {
-    const artisan = await prisma.artisanProfile.findUnique({
+    const artisanScalar = await prisma.artisanProfile.findFirst({
       where: { id },
-      include: {
-        user: {
+      select: {
+        id: true,
+        user_id: true,
+        bio: true,
+        business_name: true,
+        address: true,
+        latitude: true,
+        longitude: true,
+        service_radius_km: true,
+        average_rating: true,
+        review_count: true,
+        is_verified: true,
+        is_available: true,
+        availability_status: true,
+      }
+    });
+
+    if (!artisanScalar) return null;
+
+    const user = await prisma.user.findUnique({
+      where: { id: artisanScalar.user_id },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        avatar_url: true,
+        created_at: true,
+      }
+    });
+
+    const services = await prisma.artisanService.findMany({
+      where: { artisan_id: id },
+      select: {
+        id: true,
+        description: true,
+        price_min: true,
+        price_max: true,
+        subcategory: {
           select: {
             id: true,
-            first_name: true,
-            last_name: true,
-            avatar_url: true,
-            created_at: true,
-          }
-        },
-        services: {
-          select: {
-            id: true,
-            description: true,
-            price_min: true,
-            price_max: true,
-            subcategory: {
+            name: true,
+            category: {
               select: {
                 id: true,
                 name: true,
-                category: {
-                  select: {
-                    id: true,
-                    name: true,
-                  }
-                }
               }
             }
           }
-        },
-        portfolio: {
-          orderBy: { created_at: 'desc' }
-        },
-        reviews: {
-          include: {
-            customer: {
-              include: {
-                user: {
-                  select: {
-                    first_name: true,
-                    last_name: true,
-                    avatar_url: true,
-                  }
-                }
-              }
-            }
-          },
-          orderBy: { created_at: 'desc' },
-          take: 10,
         }
       }
     });
 
-    return artisan;
+    const artisanBase = {
+      ...artisanScalar,
+      user,
+      services,
+    };
+
+    const portfolio = await prisma.portfolioItem.findMany({
+      where: { artisan_id: id },
+      orderBy: { created_at: 'desc' }
+    });
+
+    const reviews = await prisma.review.findMany({
+      where: { artisan_id: id },
+      include: {
+        customer: {
+          include: {
+            user: {
+              select: {
+                first_name: true,
+                last_name: true,
+                avatar_url: true,
+              }
+            }
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' },
+      take: 10,
+    });
+
+    return {
+      ...artisanBase,
+      portfolio,
+      reviews
+    };
   } catch (error) {
     console.error(`Failed to fetch artisan with ID ${id}:`, error);
     return null;

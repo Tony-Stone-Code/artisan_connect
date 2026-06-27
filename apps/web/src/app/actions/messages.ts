@@ -23,6 +23,9 @@ export async function sendMessage(requestId: string, content: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
+  const dbUser = await prisma.user.findUnique({ where: { supabase_uid: user.id } })
+  if (!dbUser) return { error: 'Unauthorized' }
+
   // Ensure request exists and user has access
   const request = await prisma.serviceRequest.findUnique({
     where: { id: requestId },
@@ -31,8 +34,8 @@ export async function sendMessage(requestId: string, content: string) {
 
   if (!request) return { error: 'Request not found' }
 
-  const isArtisan = request.artisan.user_id === user.id
-  const isCustomer = request.customer.user_id === user.id
+  const isArtisan = request.artisan.user_id === dbUser.id
+  const isCustomer = request.customer.user_id === dbUser.id
 
   if (!isArtisan && !isCustomer) {
     return { error: 'Forbidden' }
@@ -44,8 +47,8 @@ export async function sendMessage(requestId: string, content: string) {
   const message = await prisma.message.create({
     data: {
       request_id: requestId,
-      sender_id: user.id,
-      content
+      sender_id: dbUser.id,
+      content,
     }
   })
 
