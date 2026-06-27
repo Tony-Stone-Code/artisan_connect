@@ -44,6 +44,7 @@ export default function LandingPage() {
                   src="/images/artisan_electrician_1782323029739.png" 
                   alt="Professional Electrician" 
                   fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
               </div>
@@ -52,6 +53,8 @@ export default function LandingPage() {
                   src="/images/artisan_plumber_1782323020851.png" 
                   alt="Professional Plumber" 
                   fill 
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
               </div>
@@ -60,6 +63,7 @@ export default function LandingPage() {
                   src="/images/artisan_carpenter_1782323041206.png" 
                   alt="Professional Carpenter" 
                   fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
               </div>

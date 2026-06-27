@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -7,7 +9,11 @@ interface ArtisanCardProps {
   artisan: any;
 }
 
+import { useState } from 'react';
+
 export function ArtisanCard({ artisan }: ArtisanCardProps) {
+  const [imageError, setImageError] = useState(false);
+  
   const displayName = artisan.business_name || `${artisan.user.first_name} ${artisan.user.last_name}`;
   const initials = artisan.business_name 
     ? artisan.business_name.substring(0, 2).toUpperCase()
@@ -23,10 +29,11 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
           {/* Header/Cover Area */}
           <div className="h-24 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent relative">
             <div className="absolute -bottom-10 left-6">
-              {artisan.user.avatar_url ? (
+              {artisan.user.avatar_url && !imageError ? (
                 <img 
                   src={artisan.user.avatar_url} 
                   alt={displayName} 
+                  onError={() => setImageError(true)}
                   className="w-20 h-20 rounded-full border-4 border-card object-cover bg-muted"
                 />
               ) : (

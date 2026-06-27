@@ -102,6 +102,8 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
         transition: transform 0.2s;
       `;
       el.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+      el.setAttribute('aria-label', `Map marker for ${artisan.business_name || artisan.user.first_name}`);
+      el.setAttribute('role', 'button');
       el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.15)'; });
       el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
 

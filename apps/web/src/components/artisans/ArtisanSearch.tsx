@@ -36,6 +36,8 @@ export function ArtisanSearch() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <Input
           type="text"
+          id="search-query"
+          name="q"
           placeholder="Search by trade, or describe your problem..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
