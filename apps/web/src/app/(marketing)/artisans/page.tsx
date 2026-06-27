@@ -41,7 +41,7 @@ async function ArtisanGrid({ query, view }: { query?: string, view?: string }) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 md:px-6 max-w-7xl mx-auto pb-24">
-      {artisans.map((artisan) => (
+      {artisans.map((artisan: any) => (
         <ArtisanCard key={artisan.id} artisan={artisan} />
       ))}
     </div>
