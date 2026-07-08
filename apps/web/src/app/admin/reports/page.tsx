@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getReports, updateReportStatus } from '@/app/actions/reports';
 import { Button } from '@/components/ui/Button';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminReportsPage() {
   let reports: any[] = [];
   try {

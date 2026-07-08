@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { getUsers } from '@/app/actions/admin';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
   const users = await getUsers();
 

@@ -1,6 +1,8 @@
 import { getPlatformMetrics } from '@/app/actions/admin';
 import { Users, ShieldCheck, CheckCircle2, AlertOctagon } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const metrics = await getPlatformMetrics();
 
