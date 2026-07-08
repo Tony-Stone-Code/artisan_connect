@@ -34,7 +34,8 @@ export async function getArtisans(query?: string) {
           AND: queryParts.map(part => ({
             OR: [
               { user: { first_name: { contains: part, mode: 'insensitive' } } },
-              { user: { last_name: { contains: part, mode: 'insensitive' } } }
+              { user: { last_name: { contains: part, mode: 'insensitive' } } },
+              { user: { email: { contains: part, mode: 'insensitive' } } }
             ]
           }))
         });
