@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Home, Briefcase, Search, Info, User as UserIcon } from 'lucide-react';
 
 export default function MarketingLayout({
   children,
@@ -14,7 +14,6 @@ export default function MarketingLayout({
 }) {
   const { user, isLoading } = useAuth();
   const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col selection:bg-primary/30 selection:text-primary">
@@ -36,20 +35,11 @@ export default function MarketingLayout({
             </nav>
           </div>
 
-          {/* Mobile brand and menu toggle */}
+          {/* Mobile brand */}
           <div className="flex items-center gap-2 md:hidden">
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 -ml-2 text-muted-foreground hover:text-foreground"
-            >
-              {isMobileMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-              )}
-            </button>
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-primary text-primary-foreground rounded-lg flex items-center justify-center font-bold text-lg">A</div>
+              <span className="font-bold text-xl tracking-tight">ArtisanConnect</span>
             </Link>
           </div>
 
@@ -90,56 +80,52 @@ export default function MarketingLayout({
           </div>
         </div>
 
-        {/* Mobile Navigation Full-Screen Overlay */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-[80px] left-0 right-0 h-[calc(100vh-80px)] bg-background/95 backdrop-blur-2xl border-t flex flex-col p-6 animate-in slide-in-from-top-4 duration-300 z-40 overflow-y-auto">
-            <nav className="flex flex-col space-y-6 text-xl font-bold tracking-tight">
-              <Link 
-                onClick={() => setIsMobileMenuOpen(false)} 
-                href="/services" 
-                className={`flex items-center justify-between pb-4 border-b border-border/50 transition-colors ${pathname.startsWith('/services') ? 'text-primary' : 'text-foreground/80 hover:text-foreground'}`}
-              >
-                <span>Services</span>
-                <svg className="h-6 w-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </Link>
-              <Link 
-                onClick={() => setIsMobileMenuOpen(false)} 
-                href="/artisans" 
-                className={`flex items-center justify-between pb-4 border-b border-border/50 transition-colors ${pathname.startsWith('/artisans') ? 'text-primary' : 'text-foreground/80 hover:text-foreground'}`}
-              >
-                <span>Find Artisans</span>
-                <svg className="h-6 w-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </Link>
-              <Link 
-                onClick={() => setIsMobileMenuOpen(false)} 
-                href="/about" 
-                className={`flex items-center justify-between pb-4 border-b border-border/50 transition-colors ${pathname.startsWith('/about') ? 'text-primary' : 'text-foreground/80 hover:text-foreground'}`}
-              >
-                <span>Our Story</span>
-                <svg className="h-6 w-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </Link>
-            </nav>
-            
-            <div className="mt-auto pb-8 pt-8 space-y-6">
-              <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 text-center">
-                <h3 className="font-bold text-lg mb-2">Ready to start?</h3>
-                <p className="text-sm text-muted-foreground mb-4">Join thousands of users on ArtisanConnect.</p>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/register">
-                  <Button className="w-full rounded-full font-bold h-12">Create Account</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </header>
-      <main className="flex-1">{children}</main>
-      <footer className="border-t py-6 md:py-0">
+      <main className="flex-1 md:pb-0 pb-20">{children}</main>
+      <footer className="border-t py-6 md:py-0 pb-24 md:pb-0">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row px-4 md:px-6">
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
             This project is built by <a href="https://gammacube.vercel.app" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4 hover:text-primary transition-colors">GammaCube</a>.
           </p>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation Bar (TikTok Vibe) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t flex items-center justify-around pb-safe pt-2 px-2 shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <Link href="/" className={`flex flex-col items-center gap-1 p-2 ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Home className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Home</span>
+        </Link>
+        <Link href="/services" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/services') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Briefcase className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Services</span>
+        </Link>
+        
+        {/* Prominent Center Button */}
+        <Link href="/artisans" className="flex flex-col items-center gap-1 -mt-5">
+          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg border-4 border-background hover:scale-105 transition-transform">
+            <Search className="w-6 h-6" />
+          </div>
+          <span className={`text-[10px] font-medium ${pathname.startsWith('/artisans') ? 'text-primary' : 'text-muted-foreground'}`}>Search</span>
+        </Link>
+        
+        <Link href="/about" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/about') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Info className="w-6 h-6" />
+          <span className="text-[10px] font-medium">About</span>
+        </Link>
+
+        {user ? (
+          <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"} className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>
+            <UserIcon className="w-6 h-6" />
+            <span className="text-[10px] font-medium">Profile</span>
+          </Link>
+        ) : (
+          <Link href="/login" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/login') ? 'text-primary' : 'text-muted-foreground'}`}>
+            <UserIcon className="w-6 h-6" />
+            <span className="text-[10px] font-medium">Log In</span>
+          </Link>
+        )}
+      </nav>
     </div>
   );
 }

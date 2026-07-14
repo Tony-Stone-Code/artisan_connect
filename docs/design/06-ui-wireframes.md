@@ -197,6 +197,39 @@ Base unit: **4px**
 
 Key elements: ❤️ = Favorite button, 📤 = Share button, 🟢/🟡/🔴 = availability status
 
+### 2.2.1 Mobile Explore Feed (TikTok-Style)
+
+```
+┌─────────────────────────┐
+│ 📱 ArtisanConnect Ghana │
+├─────────────────────────┤
+│ [Background Image/Video]│
+│                         │
+│                         │
+│                         │
+│                         │
+│                 [Avatar]│
+│                 [  +   ]│
+│                         │
+│                  [ ❤️ ] │
+│                  (4.8)  │
+│                         │
+│                  [ 💬 ] │
+│                  (42)   │
+│                         │
+│ Kwame Asante     [ 📤 ] │
+│ ✓ Verified              │
+│ 🔧 Plumber              │
+│ "Expert pipe repair...  │
+│ 📍 Kasoa                │
+│ [ View Full Profile ]   │
+└─────────────────────────┘
+```
+- **Swipe up/down** to view next/previous artisan.
+- Highly immersive, full-screen mobile experience.
+- Replaces standard grid view on mobile devices by default.
+
+
 ### 2.3 Artisan Public Profile
 
 ```
