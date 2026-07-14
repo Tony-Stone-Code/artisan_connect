@@ -29,9 +29,18 @@ export default function MarketingLayout({
               </span>
             </Link>
             <nav className="flex items-center space-x-6 text-sm font-semibold text-muted-foreground">
-              <Link href="/services" className={`transition-colors hover:text-foreground ${pathname.startsWith('/services') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>Services</Link>
-              <Link href="/artisans" className={`transition-colors hover:text-foreground ${pathname.startsWith('/artisans') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>Find Artisans</Link>
-              <Link href="/about" className={`transition-colors hover:text-foreground ${pathname.startsWith('/about') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>Our Story</Link>
+              <Link href="/services" className={`group flex items-center gap-2 transition-colors hover:text-foreground ${pathname.startsWith('/services') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>
+                <Briefcase className="w-5 h-5" />
+                <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${pathname.startsWith('/services') ? 'max-w-[100px] opacity-100' : 'max-w-0 opacity-0 group-hover:max-w-[100px] group-hover:opacity-100'}`}>Services</span>
+              </Link>
+              <Link href="/artisans" className={`group flex items-center gap-2 transition-colors hover:text-foreground ${pathname.startsWith('/artisans') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>
+                <Search className="w-5 h-5" />
+                <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${pathname.startsWith('/artisans') ? 'max-w-[120px] opacity-100' : 'max-w-0 opacity-0 group-hover:max-w-[120px] group-hover:opacity-100'}`}>Find Artisans</span>
+              </Link>
+              <Link href="/about" className={`group flex items-center gap-2 transition-colors hover:text-foreground ${pathname.startsWith('/about') ? 'text-primary border-b-2 border-primary pb-1' : ''}`}>
+                <Info className="w-5 h-5" />
+                <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${pathname.startsWith('/about') ? 'max-w-[100px] opacity-100' : 'max-w-0 opacity-0 group-hover:max-w-[100px] group-hover:opacity-100'}`}>Our Story</span>
+              </Link>
             </nav>
           </div>
 
@@ -92,37 +101,37 @@ export default function MarketingLayout({
 
       {/* Mobile Bottom Navigation Bar (TikTok Vibe) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t flex items-center justify-around pb-safe pt-2 px-2 shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <Link href="/" className={`flex flex-col items-center gap-1 p-2 ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
+        <Link href="/" className={`group flex flex-col items-center p-2 ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
           <Home className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Home</span>
+          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname === '/' ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Home</span>
         </Link>
-        <Link href="/services" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/services') ? 'text-primary' : 'text-muted-foreground'}`}>
+        <Link href="/services" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/services') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Briefcase className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Services</span>
+          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/services') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Services</span>
         </Link>
         
         {/* Prominent Center Button */}
-        <Link href="/artisans" className="flex flex-col items-center gap-1 -mt-5">
-          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg border-4 border-background hover:scale-105 transition-transform">
+        <Link href="/artisans" className="group flex flex-col items-center -mt-5">
+          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg border-4 border-background group-hover:scale-105 transition-transform">
             <Search className="w-6 h-6" />
           </div>
-          <span className={`text-[10px] font-medium ${pathname.startsWith('/artisans') ? 'text-primary' : 'text-muted-foreground'}`}>Search</span>
+          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/artisans') ? 'text-primary max-h-4 opacity-100 mt-1' : 'text-muted-foreground max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Search</span>
         </Link>
         
-        <Link href="/about" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/about') ? 'text-primary' : 'text-muted-foreground'}`}>
+        <Link href="/about" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/about') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Info className="w-6 h-6" />
-          <span className="text-[10px] font-medium">About</span>
+          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/about') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>About</span>
         </Link>
 
         {user ? (
-          <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"} className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"} className={`group flex flex-col items-center p-2 ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>
             <UserIcon className="w-6 h-6" />
-            <span className="text-[10px] font-medium">Profile</span>
+            <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Profile</span>
           </Link>
         ) : (
-          <Link href="/login" className={`flex flex-col items-center gap-1 p-2 ${pathname.startsWith('/login') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Link href="/login" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/login') ? 'text-primary' : 'text-muted-foreground'}`}>
             <UserIcon className="w-6 h-6" />
-            <span className="text-[10px] font-medium">Log In</span>
+            <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/login') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Log In</span>
           </Link>
         )}
       </nav>
