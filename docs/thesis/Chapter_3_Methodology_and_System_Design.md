@@ -12,6 +12,70 @@ The development lifecycle was structured into four distinct phases:
 3. **Sprint-Based Development:** Breaking the complex project into manageable developmental sprints (e.g., Sprint 1: Authentication & Identity; Sprint 2: AI Hybrid Search; Sprint 3: Escrow State Machine; Sprint 4: Admin Dispute Resolution).
 4. **Testing and Refinement:** Conducting continuous unit testing on the database schema to ensure state transitions (e.g., from `PENDING` to `IN_PROGRESS`) remained secure and tamper-proof.
 
+### 3.2.1 Use Case Diagram
+The system involves three primary actors: the Customer, the Artisan, and the System Administrator. The Mermaid diagram below illustrates the high-level use cases for each actor.
+
+```mermaid
+usecaseDiagram
+    actor Customer
+    actor Artisan
+    actor Admin
+
+    package "ArtisanConnect Platform" {
+        usecase "Search Artisans (AI)" as UC1
+        usecase "Request Service" as UC2
+        usecase "Pay to Escrow" as UC3
+        usecase "File Dispute" as UC4
+        
+        usecase "Create Profile" as UC5
+        usecase "Send Quote" as UC6
+        usecase "Start/Complete Work" as UC7
+        usecase "Withdraw Funds" as UC8
+        
+        usecase "Verify Identities" as UC9
+        usecase "Resolve Disputes (AI Assisted)" as UC10
+    }
+
+    Customer --> UC1
+    Customer --> UC2
+    Customer --> UC3
+    Customer --> UC4
+
+    Artisan --> UC5
+    Artisan --> UC6
+    Artisan --> UC7
+    Artisan --> UC8
+
+    Admin --> UC9
+    Admin --> UC10
+```
+
+### 3.2.2 Service Lifecycle Workflow
+The following sequence diagram outlines the core workflow of a service request, from initial contact to financial resolution.
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant S as System (Escrow)
+    participant A as Artisan
+
+    C->>A: Submit Service Request
+    A->>C: Send Quote (e.g. GHS 200)
+    C->>S: Accept & Pay (Funds HELD)
+    S-->>A: Notify Funds Secured
+    A->>C: Perform Work
+    A->>S: Mark Job as "Completed"
+    
+    alt Customer Satisfied
+        C->>S: Confirm Satisfaction
+        S->>A: Release Funds (RELEASED)
+    else Customer Unsatisfied
+        C->>S: File Dispute
+        S->>S: Freeze Funds (FROZEN)
+        S-->>Admin: Request AI Mediation
+    end
+```
+
 ## 3.3 System Architecture
 ArtisanConnect utilizes a highly modern, serverless Client-Server architecture designed for scalability and rapid deployment. The frontend is cleanly decoupled from the database but remains tightly integrated with the backend logic through server-side rendering mechanisms.
 
@@ -101,3 +165,7 @@ This drastically reduces the cognitive load on administrators, allowing them to 
 Recognizing that the overwhelming majority of Ghanaian users access the internet exclusively via affordable mobile devices, the UI was strictly conceptualized using a "Mobile-First" paradigm.
 
 A critical UX innovation in ArtisanConnect is the implementation of a dynamic **Bottom Navigation Bar**, heavily inspired by platforms like TikTok and Instagram. By anchoring primary actions (Home, Search, Profile) to the bottom of the screen, the interface ensures that essential functions remain within comfortable reach of the user's thumb, drastically improving navigation speed, platform engagement, and usability for non-technical demographics. Desktop users, conversely, are presented with a traditional, expanding top navigation bar to utilize the wider screen real estate efficiently.
+
+> **[INSERT SCREENSHOT HERE: High-fidelity mockup or wireframe of the Mobile UI showing the Bottom Navigation Bar]**
+
+> **[INSERT SCREENSHOT HERE: High-fidelity mockup or wireframe of the Desktop UI showing the Top Navigation Bar]**

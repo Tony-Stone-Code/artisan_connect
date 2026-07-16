@@ -29,6 +29,8 @@ The implementation follows this secure algorithmic flow:
 4. Simultaneously, the parent `ServiceRequest` status is advanced to `IN_PROGRESS`.
 5. This simulates that funds are locked securely within the platform's virtual vault. The artisan is notified to commence work, explicitly restricted from withdrawing the `HELD` funds until the customer signs off.
 
+> **[INSERT SCREENSHOT HERE: Escrow Payment Simulation UI - e.g., the 'Accept & Pay' button or 'Funds Held' status]**
+
 ### 4.3.2 AI-Powered Hybrid Search Implementation
 The ArtisanConnect search functionality fundamentally shifts away from rigid database queries toward intent-based discovery. 
 The implementation workflow is as follows:
@@ -38,11 +40,15 @@ The implementation workflow is as follows:
 4. Once the LLM returns the JSON intent (e.g., `{"category": "Plumbing"}`), the application utilizes Prisma to filter the `ArtisanProfile` table, bypassing the need for the user to type the exact word "plumber."
 5. If advanced vector search is enabled, the query is converted into an embedding array and compared against artisan service descriptions utilizing PostgreSQL's `pgvector` extension and the Cosine Similarity mathematical function, returning artisans ranked by semantic relevance.
 
+> **[INSERT SCREENSHOT HERE: AI Search Bar and Results - showing a natural language query yielding specific artisans]**
+
 ### 4.3.3 Identity Verification Flow
 To combat the profound trust deficit identified in Chapter 2, a stringent identity verification workflow was implemented.
 1. Artisans upload their Ghana Card identification number and a biometric selfie via the dashboard.
 2. The system immediately flags the `ArtisanIdentity` database record as `PENDING`, heavily restricting the artisan's visibility on the public platform.
 3. An Administrator must access a protected route (`/admin/verification`) to visually cross-reference the submitted data. Upon clicking "Approve," the database status is updated to `VERIFIED`, granting the artisan a public trust badge. This manual intervention introduces a "human-in-the-loop" safeguard against automated identity fraud.
+
+> **[INSERT SCREENSHOT HERE: Admin Verification Dashboard - showing pending artisan approvals]**
 
 ## 4.4 System Testing and Evaluation
 Rigorous software testing is imperative to validate that the application meets both functional requirements and security constraints. Given the local deployment strategy, the testing focused heavily on database integrity and browser-based End-to-End (E2E) workflows.
@@ -60,6 +66,8 @@ Extensive manual E2E browser testing was conducted simulating the entire user li
 4. **Dispute Initiation:** The Artisan marks the job as "Started," but the Customer subsequently files a Dispute form citing incomplete work.
 5. **System Enforcement:** The platform successfully intercepts the dispute, automatically transitioning the Escrow to `FROZEN`. The Artisan's UI is updated to block any attempts to request payment release.
 6. **Admin Adjudication:** The Administrator dashboard correctly displays the disputed request, utilizing the Gemini API to summarize the chat logs, and provides the Admin with the overriding authority to force a `RELEASE` (to the artisan) or `REFUND` (to the customer).
+
+> **[INSERT SCREENSHOT HERE: AI Dispute Resolution Summary in Admin Panel - showing the LLM generated summary]**
 
 ### 4.4.3 UI/UX Responsiveness Testing
 To validate the Mobile-First design philosophy, the user interface was rigorously tested using browser development tools to simulate various constrained viewports (e.g., iPhone SE, Pixel 5). 
