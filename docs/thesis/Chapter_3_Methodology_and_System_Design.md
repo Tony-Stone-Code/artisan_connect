@@ -80,10 +80,11 @@ sequenceDiagram
 ArtisanConnect utilizes a highly modern, serverless Client-Server architecture designed for scalability and rapid deployment. The frontend is cleanly decoupled from the database but remains tightly integrated with the backend logic through server-side rendering mechanisms.
 
 ### 3.3.1 The Technology Stack
-*   **Frontend (Client Tier):** The application is built using Next.js 15, an advanced React framework. It utilizes the modern "App Router" paradigm for optimized routing and layout persistence. Styling is achieved using TailwindCSS for highly customizable, utility-first design, alongside Radix UI primitives to ensure compliance with strict accessibility (a11y) standards.
-*   **Backend (Application Tier):** Next.js Server Actions and API Routes manage the secure execution of business logic. This eliminates the need for a separate monolithic backend server (like Node/Express), reducing latency and infrastructure costs. The backend securely interfaces with external APIs, notably the Google Gemini API for Natural Language Processing (NLP).
-*   **Database (Data Tier):** The data layer is hosted on Supabase, an open-source Firebase alternative powered by a robust PostgreSQL database. Supabase provides out-of-the-box Row Level Security (RLS) policies, ensuring that users can only access their own transactional data.
-*   **ORM Layer:** Prisma ORM is utilized as the bridging layer between the Next.js server and the PostgreSQL database. Prisma generates highly optimized, strongly-typed SQL queries, drastically reducing runtime errors and preventing SQL injection vulnerabilities.
+The technology stack was carefully selected to prioritize security, deployment velocity, and high performance on low-bandwidth networks. The stack is composed of:
+*   **Frontend (Client Tier):** The application is built using Next.js 15, an advanced React framework. While standard React applications suffer from slow initial load times due to Client-Side Rendering (CSR), Next.js utilizes the modern "App Router" paradigm for optimized routing, layout persistence, and highly optimized Server-Side Rendering (SSR). This ensures that pages load rapidly, even on constrained 3G mobile networks typical in rural Ghana. Styling is achieved using TailwindCSS for highly customizable, utility-first design, deliberately chosen over older frameworks like Bootstrap to minimize the final CSS bundle size. Complex interactive components utilize Radix UI primitives to ensure strict compliance with web accessibility (a11y) standards.
+*   **Backend (Application Tier):** Next.js Server Actions and API Routes manage the secure execution of business logic. This entirely eliminates the need for a separate monolithic backend server (like Node/Express or Django), drastically reducing latency, preventing cross-origin (CORS) issues, and minimizing infrastructure hosting costs. The backend securely interfaces with external APIs, notably the Google Gemini API for Natural Language Processing (NLP).
+*   **Database (Data Tier):** The data layer is hosted on Supabase, an open-source Firebase alternative powered by a robust PostgreSQL database. Supabase was chosen over MongoDB because financial escrow systems require strict ACID compliance and relational integrity, which NoSQL databases struggle to provide inherently. Furthermore, Supabase provides out-of-the-box Row Level Security (RLS) policies, ensuring that users can only query and access their own transactional data, preventing unauthorized data scraping.
+*   **ORM Layer:** Prisma ORM is utilized as the critical bridging layer between the Next.js server and the PostgreSQL database. Prisma generates highly optimized, strongly-typed SQL queries. By enforcing strict TypeScript definitions derived from the database schema, Prisma drastically reduces runtime errors and provides impenetrable defense against SQL injection vulnerabilities.
 
 ### 3.3.2 Architectural Flow Diagram
 Below is the high-level system architecture, illustrating the data flow between the client, the serverless functions, the AI engine, and the database.
@@ -149,19 +150,38 @@ To prevent fraud, the `ServiceRequest` and `EscrowPayment` entities are strictly
 *   **Dispute Intervention:** If the customer files a grievance, the `EscrowPayment` instantly transitions to `FROZEN`. At this state, neither the customer nor the artisan has access to the funds. Only an Administrator can review the case and execute a forced `RELEASE` or `REFUND`.
 
 ## 3.5 Artificial Intelligence Integration
-ArtisanConnect pioneers the integration of AI directly into the operational logic of the informal gig economy, moving far beyond traditional conditional programming.
+ArtisanConnect pioneers the integration of AI directly into the operational logic of the informal gig economy, moving far beyond traditional conditional programming or basic chatbots. The AI acts as a sophisticated cognitive layer between the user's unstructured input and the system's structured database.
 
 ### 3.5.1 Intelligent Matchmaking (Hybrid Search)
-When a customer inputs a colloquial query such as "My roof is leaking profusely," traditional keyword databases fail because the word "roofer" or "carpenter" is absent. The system intercepts this query and passes it to the Google Gemini LLM to extract semantic intent. The resulting output (e.g., intent: "Roofing Repair") is converted into high-dimensional vector embeddings. These embeddings are then queried against the artisan database using PostgreSQL's `pgvector` extension via Cosine Similarity, successfully returning the most relevant craftsmen based on context, not just keywords.
+When a customer inputs a colloquial query such as "My roof is leaking profusely and damaging the ceiling," traditional keyword databases fail entirely because the specific technical words "roofer," "mason," or "carpenter" are absent. The system intercepts this query via a secure Server Action and passes it to the Google Gemini LLM with heavily engineered system prompts. The LLM extracts the semantic intent and categorizes the problem. The resulting output (e.g., intent: "Roofing Repair") is converted into high-dimensional vector embeddings. These embeddings are then queried against the artisan database using PostgreSQL's `pgvector` extension via Cosine Similarity, successfully returning the most relevant craftsmen based on deep semantic context, bridging the digital literacy gap for non-technical users.
 
 ### 3.5.2 Automated Dispute Summarization (ODR)
-In a high-volume marketplace, human administrators are rapidly overwhelmed if forced to manually read hundreds of chat messages to resolve a GHS 200 dispute. ArtisanConnect solves this by feeding the entire chat transcript of a disputed `ServiceRequest` into the Gemini API. The AI is prompted to act as an impartial legal mediator, outputting a highly structured JSON summary that highlights:
-1. The agreed-upon quote and scope of work.
-2. The chronological breakdown of the conflict.
-3. Identified breaches of contract by either party.
-This drastically reduces the cognitive load on administrators, allowing them to adjudicate disputes in seconds rather than minutes.
+In a high-volume marketplace, human administrators are rapidly overwhelmed if forced to manually read hundreds of chat messages to resolve a GHS 200 dispute. ArtisanConnect solves this by feeding the entire chat transcript of a disputed `ServiceRequest` into the Gemini API. The AI is specifically prompted to act as an impartial legal mediator. Through strict prompt engineering, the LLM is instructed to avoid 'hallucinations' and solely output a highly structured JSON summary based strictly on the provided transcript, highlighting:
+1. The agreed-upon quote and initial scope of work.
+2. The chronological breakdown of the conflict and communication breakdown.
+3. Identified breaches of contract by either the artisan (e.g., non-completion) or the customer (e.g., expanding scope without payment).
+This drastically reduces the cognitive load on administrators, allowing them to adjudicate complex disputes in seconds rather than minutes, while maintaining ultimate human authority over the final financial outcome.
 
-## 3.6 User Interface (UI) and Experience (UX) Design
+## 3.6 System Requirements
+Before development commenced, the functional and non-functional requirements were strictly defined to guide the architecture.
+
+### 3.6.1 Functional Requirements
+Functional requirements define the core capabilities the system must execute:
+1. **User Authentication:** The system must allow Customers, Artisans, and Administrators to securely register, log in, and manage sessions using encrypted JWTs.
+2. **Identity Verification:** Artisans must be able to upload their Ghana Card details for administrative verification before their profiles become publicly active.
+3. **Service Quotation:** Artisans must be able to generate and submit fixed-price quotes (in GHS) in response to customer service requests.
+4. **Escrow Integration:** The system must securely hold funds (state: `HELD`) upon quote acceptance and mathematically prevent artisan withdrawal until customer approval is granted.
+5. **AI Search:** The system must accept natural language queries and return semantically relevant artisan profiles.
+6. **Dispute Filing:** Both parties must have the ability to flag a transaction, triggering the `FROZEN` escrow state and initiating administrative review.
+
+### 3.6.2 Non-Functional Requirements
+Non-functional requirements define the quality attributes and performance metrics of the system:
+1. **Performance:** The mobile web application must achieve a First Contentful Paint (FCP) of under 2.5 seconds on 3G networks, leveraging Next.js Server-Side Rendering.
+2. **Security:** The database must enforce strict Row Level Security (RLS). Passwords must be hashed using bcrypt or equivalent secure algorithms. API keys must never be exposed to the client browser.
+3. **Usability:** The interface must be highly intuitive, utilizing a mobile-first paradigm (bottom navigation bar) to cater to users with limited technical proficiency.
+4. **Reliability:** The escrow state machine must maintain ACID compliance at the database level to ensure zero financial discrepancies during concurrent transactions.
+
+## 3.7 User Interface (UI) and Experience (UX) Design
 Recognizing that the overwhelming majority of Ghanaian users access the internet exclusively via affordable mobile devices, the UI was strictly conceptualized using a "Mobile-First" paradigm.
 
 A critical UX innovation in ArtisanConnect is the implementation of a dynamic **Bottom Navigation Bar**, heavily inspired by platforms like TikTok and Instagram. By anchoring primary actions (Home, Search, Profile) to the bottom of the screen, the interface ensures that essential functions remain within comfortable reach of the user's thumb, drastically improving navigation speed, platform engagement, and usability for non-technical demographics. Desktop users, conversely, are presented with a traditional, expanding top navigation bar to utilize the wider screen real estate efficiently.
