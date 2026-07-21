@@ -58,3 +58,52 @@ export async function sendMessage(requestId: string, content: string) {
 
   return { message }
 }
+
+export async function getUnreadMessageCount() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { count: 0 }
+
+  const dbUser = await prisma.user.findUnique({ where: { supabase_uid: user.id } })
+  if (!dbUser) return { count: 0 }
+
+  // Count messages where the current user is part of the request, 
+  // the sender is NOT the current user, and is_read is false
+  const count = await prisma.message.count({
+    where: {
+      is_read: false,
+      sender_id: { not: dbUser.id },
+      request: {
+        OR: [
+          { customer: { user_id: dbUser.id } },
+          { artisan: { user_id: dbUser.id } }
+        ]
+      }
+    }
+  })
+
+  return { count }
+}
+
+export async function markMessagesAsRead(requestId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false }
+
+  const dbUser = await prisma.user.findUnique({ where: { supabase_uid: user.id } })
+  if (!dbUser) return { success: false }
+
+  // Update all unread messages in this request where the current user is NOT the sender
+  await prisma.message.updateMany({
+    where: {
+      request_id: requestId,
+      sender_id: { not: dbUser.id },
+      is_read: false
+    },
+    data: {
+      is_read: true
+    }
+  })
+
+  return { success: true }
+}

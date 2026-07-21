@@ -48,10 +48,11 @@ export async function getArtisans(query?: string) {
             model: google('gemini-2.5-flash'),
             system: `You are an expert search assistant for a home services directory in Ghana. 
 Parse the user's search query to determine the required artisan profession.
-Extract the most relevant artisan profession needed (e.g. Plumber, Electrician, Carpenter). If the query is just a specific business name or person's name (e.g. "John", "Acme Corp"), return an empty string. Only return a profession if the user is describing a problem (e.g., "my sink is leaking") or directly asking for a trade.`,
+Extract the most relevant artisan profession needed and map it EXACTLY to one of these categories: "Plumbing", "Electrical", "Carpentry", "Masonry", "Auto Mechanics", "Cleaning", "Painting", or "Other".
+If the query is just a specific business name or person's name, return an empty string. Only return a category if the user is describing a problem (e.g., "my sink is leaking" -> "Plumbing").`,
             prompt: query,
             schema: z.object({
-              profession: z.string().describe('The type of artisan needed (e.g., Plumber, Electrician, Carpenter), or empty string if not applicable'),
+              profession: z.string().describe('The EXACT category name (e.g., Plumbing, Electrical, Carpentry), or empty string if not applicable'),
             }),
           });
 
@@ -117,7 +118,15 @@ Extract the most relevant artisan profession needed (e.g. Plumber, Electrician, 
       take: 50,
     });
 
-    return artisans;
+    return artisans.map((artisan: any) => ({
+      ...artisan,
+      average_rating: artisan.average_rating ? Number(artisan.average_rating) : 0,
+      services: artisan.services?.map((s: any) => ({
+        ...s,
+        price_min: s.price_min ? Number(s.price_min) : null,
+        price_max: s.price_max ? Number(s.price_max) : null,
+      })) || [],
+    }));
   } catch (error) {
     console.error('Failed to fetch artisans:', error);
     return [];
@@ -182,8 +191,13 @@ export async function getArtisanById(id: string) {
 
     const artisanBase = {
       ...artisanScalar,
+      average_rating: artisanScalar.average_rating ? Number(artisanScalar.average_rating) : 0,
       user,
-      services,
+      services: services.map((s: any) => ({
+        ...s,
+        price_min: s.price_min ? Number(s.price_min) : null,
+        price_max: s.price_max ? Number(s.price_max) : null,
+      })),
     };
 
     const portfolio = await prisma.portfolioItem.findMany({

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { sendMessage } from '@/app/actions/messages';
+import { sendMessage, markMessagesAsRead } from '@/app/actions/messages';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -54,14 +54,21 @@ export function ChatBox({ requestId, currentUserId, initialMessages }: ChatBoxPr
             if (prev.find((m) => m.id === newMsg.id)) return prev;
             return [...prev, newMsg];
           });
+          // If we receive a message while looking at the chat, mark it as read immediately
+          if (newMsg.sender_id !== currentUserId) {
+            markMessagesAsRead(requestId).catch(console.error);
+          }
         }
       )
       .subscribe();
 
+    // Mark messages as read when initially opening the chat
+    markMessagesAsRead(requestId).catch(console.error);
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [requestId, supabase]);
+  }, [requestId, currentUserId, supabase]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();

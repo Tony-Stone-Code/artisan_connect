@@ -5,9 +5,11 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase/client';
 import { updateProfile } from '@/app/actions/auth';
 import { uploadMedia, getIdentityStatus } from '@/app/actions/identity';
+import imageCompression from 'browser-image-compression';
 import Link from 'next/link';
 import { ShieldAlert, ShieldCheck, Shield } from 'lucide-react';
 import { ArtisanLocationSettings } from '@/components/artisans/ArtisanLocationSettings';
+import { ArtisanServicesSettings } from '@/components/artisans/ArtisanServicesSettings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -49,15 +51,25 @@ export default function ProfilePage() {
 
       // Upload avatar if a new file was selected
       if (avatarFile) {
-        const formData = new FormData();
-        formData.append('file', avatarFile);
-        formData.append('bucket', 'verifications'); // Using verifications bucket for now
-        const uploadResult = await uploadMedia(formData);
-        if (uploadResult.error || !uploadResult.url) {
-          throw new Error(uploadResult.error || 'Failed to upload avatar');
+        try {
+          const options = { maxSizeMB: 1, maxWidthOrHeight: 1024, useWebWorker: true };
+          const compressedFile = await imageCompression(avatarFile, options);
+          
+          const formData = new FormData();
+          formData.append('file', compressedFile);
+          formData.append('bucket', 'verifications'); // Using verifications bucket for now
+          const uploadResult = await uploadMedia(formData);
+          if (uploadResult.error || !uploadResult.url) {
+            console.warn('Upload to Supabase failed, using placeholder URL', uploadResult.error);
+            finalAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName)}&background=random`;
+          } else {
+            finalAvatarUrl = uploadResult.url;
+          }
+          setAvatarUrl(finalAvatarUrl);
+        } catch (error) {
+          console.error("Compression error:", error);
+          throw new Error('Failed to compress and upload avatar');
         }
-        finalAvatarUrl = uploadResult.url;
-        setAvatarUrl(finalAvatarUrl);
       }
 
       // 1. Update Supabase Auth metadata
@@ -162,6 +174,10 @@ export default function ProfilePage() {
             </Link>
           </CardContent>
         </Card>
+      )}
+
+      {user?.user_metadata?.role === 'ARTISAN' && (
+        <ArtisanServicesSettings />
       )}
 
       {user?.user_metadata?.role === 'ARTISAN' && (

@@ -95,11 +95,12 @@ export function ArtisanExploreItem({ artisan }: ArtisanExploreItemProps) {
               </div>
             )}
 
-            <Button asChild variant="default" size="sm" className="rounded-full shadow-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground px-6">
-              <Link href={`/artisans/${artisan.id}`}>
-                View Profile
-              </Link>
-            </Button>
+            <Link 
+              href={`/artisans/${artisan.id}`}
+              className="inline-flex items-center justify-center rounded-full shadow-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-9 text-sm transition-colors"
+            >
+              View Profile
+            </Link>
           </div>
 
           {/* Right Side: Action Bar */}

@@ -22,42 +22,57 @@ export function ViewToggle() {
 
   return (
     <div className="flex items-center gap-1 bg-muted p-1 rounded-lg border border-border">
-      <Button 
-        variant={currentView === 'auto' || currentView === 'explore' ? 'primary' : 'ghost'} 
-        size="sm" 
-        onClick={() => setView('explore')}
-        className="gap-2 px-4 md:hidden"
-      >
-        <PlaySquare className="w-4 h-4" />
-        Explore
-      </Button>
-      <Button 
-        variant={currentView === 'explore' ? 'primary' : 'ghost'} 
-        size="sm" 
-        onClick={() => setView('explore')}
-        className="gap-2 px-4 hidden md:flex"
-      >
-        <PlaySquare className="w-4 h-4" />
-        Explore
-      </Button>
-      <Button 
-        variant={currentView === 'auto' || currentView === 'grid' ? 'primary' : 'ghost'} 
-        size="sm" 
-        onClick={() => setView('grid')}
-        className="gap-2 px-4 hidden md:flex"
-      >
-        <Grid className="w-4 h-4" />
-        Grid
-      </Button>
-      <Button 
-        variant={currentView === 'grid' ? 'primary' : 'ghost'} 
-        size="sm" 
-        onClick={() => setView('grid')}
-        className="gap-2 px-4 md:hidden"
-      >
-        <Grid className="w-4 h-4" />
-        Grid
-      </Button>
+      {/* Mobile Explore */}
+      <span className="md:hidden">
+        <Button 
+          variant={currentView === 'auto' || currentView === 'explore' ? 'primary' : 'ghost'} 
+          size="sm" 
+          onClick={() => setView('explore')}
+          className="gap-2 px-3"
+        >
+          <PlaySquare className="w-4 h-4" />
+          <span className="sr-only sm:not-sr-only">Explore</span>
+        </Button>
+      </span>
+
+      {/* Desktop Explore */}
+      <span className="hidden md:inline-flex">
+        <Button 
+          variant={currentView === 'explore' ? 'primary' : 'ghost'} 
+          size="sm" 
+          onClick={() => setView('explore')}
+          className="gap-2 px-4"
+        >
+          <PlaySquare className="w-4 h-4" />
+          Explore
+        </Button>
+      </span>
+
+      {/* Desktop Grid */}
+      <span className="hidden md:inline-flex">
+        <Button 
+          variant={currentView === 'auto' || currentView === 'grid' ? 'primary' : 'ghost'} 
+          size="sm" 
+          onClick={() => setView('grid')}
+          className="gap-2 px-4"
+        >
+          <Grid className="w-4 h-4" />
+          Grid
+        </Button>
+      </span>
+
+      {/* Mobile Grid */}
+      <span className="md:hidden">
+        <Button 
+          variant={currentView === 'grid' ? 'primary' : 'ghost'} 
+          size="sm" 
+          onClick={() => setView('grid')}
+          className="gap-2 px-3"
+        >
+          <Grid className="w-4 h-4" />
+          <span className="sr-only sm:not-sr-only">Grid</span>
+        </Button>
+      </span>
       <Button 
         variant={currentView === 'map' ? 'primary' : 'ghost'} 
         size="sm" 
@@ -65,7 +80,7 @@ export function ViewToggle() {
         className="gap-2 px-4"
       >
         <Map className="w-4 h-4" />
-        Map
+        <span className="sr-only sm:not-sr-only">Map</span>
       </Button>
     </div>
   );

@@ -135,7 +135,18 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
 
             {/* Quotes Section */}
             {request.quotes && request.quotes.length > 0 && (
-              <QuoteList quotes={request.quotes} isCustomer={isCustomer} />
+              <QuoteList 
+                quotes={request.quotes.map((q: any) => ({
+                  ...q,
+                  amount: Number(q.amount),
+                  escrow: q.escrow ? {
+                    ...q.escrow,
+                    amount: Number(q.escrow.amount),
+                    fee_amount: Number(q.escrow.fee_amount)
+                  } : null
+                }))} 
+                isCustomer={isCustomer} 
+              />
             )}
             
           </CardContent>

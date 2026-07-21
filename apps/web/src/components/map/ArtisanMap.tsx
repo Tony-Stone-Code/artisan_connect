@@ -163,19 +163,26 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
       // Create custom marker element
       const el = document.createElement('div');
       el.style.cssText = `
-        width: 36px; height: 36px;
-        background: var(--primary, #6d28d9);
-        border-radius: 50%;
+        width: 44px; height: 44px;
+        background: hsl(var(--primary, 262.1 83.3% 57.8%));
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(109,40,217,0.3);
-        transition: transform 0.2s;
+        border: 3px solid white;
+        box-shadow: -4px 4px 12px rgba(0,0,0,0.3);
+        margin-top: -22px;
       `;
-      el.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+      el.innerHTML = `
+        <div style="transform: rotate(45deg); display: flex; align-items: center; justify-content: center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+      `;
       el.setAttribute('aria-label', `Map marker for ${artisan.business_name || artisan.user.first_name}`);
       el.setAttribute('role', 'button');
-      el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.15)'; });
-      el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
 
       const marker = new mapboxgl.Marker({ element: el })
         .setLngLat([artisan.longitude, artisan.latitude])

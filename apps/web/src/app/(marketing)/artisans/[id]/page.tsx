@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { MapPin, Star, ShieldCheck, Briefcase, Calendar, MessageSquare, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ReportButton } from '@/components/ui/ReportButton';
+import ProfileLocationMap from '@/components/map/ProfileLocationMap';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -136,6 +137,31 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
           {/* Right Column: Details, Services, Portfolio, Reviews */}
           <div className="lg:col-span-2 space-y-8">
             
+            {/* Location & Service Area */}
+            <Card className="border-border/50 shadow-sm overflow-hidden">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">Service Area & Location</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 border-t border-border/50">
+                <ProfileLocationMap 
+                  latitude={artisan.latitude} 
+                  longitude={artisan.longitude} 
+                  businessName={displayName} 
+                />
+                <div className="p-4 bg-muted/20 text-sm flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    <span>{artisan.address || 'Address not specified'}</span>
+                  </div>
+                  {artisan.service_radius_km && (
+                    <Badge variant="outline" className="bg-background">
+                      Serves within {artisan.service_radius_km}km
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* About */}
             <Card className="border-border/50 shadow-sm">
               <CardHeader>
