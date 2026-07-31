@@ -6,6 +6,8 @@ This chapter outlines the research methodology adopted for the development of Ar
 ## 3.2 Methodology
 The Agile Software Development methodology was adopted for this project. Unlike traditional Waterfall models, Agile promotes iterative development, continuous feedback loops, and highly flexible responses to changing requirements. This was particularly crucial for ArtisanConnect, as the user experience required constant refinement based on how non-technical users interact with AI search bars and mobile navigation.
 
+This methodological choice is supported by empirical software engineering evidence that iterative Agile practices improve responsiveness to evolving requirements and strengthen delivery outcomes in uncertain project environments (Dybå & Dingsøyr, 2008, DOI: https://doi.org/10.1016/j.infsof.2008.01.006).
+
 The development lifecycle was structured into four distinct phases:
 1. **Requirement Analysis & Elicitation:** Identifying the acute pain points of existing classified platforms (like Jiji Ghana) through contextual analysis of the local gig economy. 
 2. **Iterative Design & Prototyping:** Utilizing wireframing tools to conceptualize a user-friendly interface. A core design decision during this phase was abandoning the traditional "hamburger menu" in favor of a bottom-anchored navigation bar, mimicking high-engagement apps like TikTok to improve accessibility for mobile users.
@@ -76,6 +78,20 @@ sequenceDiagram
     end
 ```
 
+
+### 3.2.3 Research Design Justification
+The project adopted a **Design Science-oriented implementation methodology** within an Agile execution structure. In this context, the thesis does not only discuss a problem theoretically; it also builds and evaluates a functional digital artifact (ArtisanConnect) that addresses measurable trust, matching, and dispute-resolution problems in a real socio-economic setting. This is appropriate for an undergraduate Information Technology capstone because the project outcome can be validated through concrete functional requirements, system behavior, and user-oriented quality metrics.
+
+To keep the methodology academically rigorous, each sprint output was linked to one or more objectives in Chapter One (e.g., escrow trust controls, AI hybrid search relevance, and dispute-management support). The iterative loop used in each sprint followed: **problem framing -> design decision -> implementation -> test evidence -> refinement**. This ensured that Chapter Four implementation details are traceable back to methodological decisions documented in this chapter.
+
+### 3.2.4 Data Inputs, Elicitation, and Validation Approach
+Requirements and design assumptions were validated through a triangulated process tailored to the Ghanaian context:
+1. **Contextual observation and comparative platform analysis:** Existing marketplace workflows were studied to identify gaps in identity verification, payment trust, and dispute handling.
+2. **Scenario-based elicitation:** Realistic service scenarios (e.g., household repairs, delayed completion, scope changes) were used to derive system states, notifications, and fallback flows.
+3. **Prototype walkthrough validation:** Interface and workflow prototypes were reviewed against expected user tasks for customers, artisans, and administrators.
+
+This approach reduced the risk of designing features that look technically correct but fail practical usability for first-time digital marketplace users.
+
 ## 3.3 System Architecture
 ArtisanConnect utilizes a highly modern, serverless Client-Server architecture designed for scalability and rapid deployment. The frontend is cleanly decoupled from the database but remains tightly integrated with the backend logic through server-side rendering mechanisms.
 
@@ -103,6 +119,17 @@ graph TD
     Supabase -- "5. Relational Data Response" --> NextJS
     NextJS -- "6. Rendered HTML / React Server Components" --> Client
 ```
+
+
+### 3.3.3 Security and Trust-by-Design Principles
+Given that ArtisanConnect mediates financial commitments between largely unknown parties, the architecture was designed with explicit **institution-based trust controls** rather than relying on interpersonal trust alone. Empirical marketplace research shows that escrow and institutional safeguards materially increase user trust and reduce perceived transaction risk in online environments (Pavlou & Gefen, 2004, DOI: https://doi.org/10.1287/isre.1040.0015).
+
+Consequently, security controls were distributed across all layers:
+- **Client Layer:** Sensitive operations are never finalized purely on client state; privileged actions require server-side verification.
+- **Application Layer:** Server Actions and API routes enforce authorization gates and role-based pathways for customer, artisan, and admin actions.
+- **Database Layer:** Referential integrity constraints, restricted write paths, and Row Level Security policies constrain data visibility and mutation boundaries.
+
+This layered strategy ensures that even if one control is weakened, downstream controls continue to enforce transaction safety.
 
 ## 3.4 Database Design and Modeling
 A strict relational database model is essential for managing the complex, heavily interconnected entities of a two-sided financial marketplace. The PostgreSQL database relies heavily on foreign key constraints and ENUMs to maintain referential integrity.
@@ -149,6 +176,18 @@ To prevent fraud, the `ServiceRequest` and `EscrowPayment` entities are strictly
 *   **Completion:** The artisan cannot withdraw funds immediately. Only when the customer confirms satisfaction does the escrow transition to `RELEASED`.
 *   **Dispute Intervention:** If the customer files a grievance, the `EscrowPayment` instantly transitions to `FROZEN`. At this state, neither the customer nor the artisan has access to the funds. Only an Administrator can review the case and execute a forced `RELEASE` or `REFUND`.
 
+
+### 3.4.3 Transactional Integrity and Concurrency Safeguards
+Because escrow events can be triggered by multiple actors at different times, the database model was designed to minimize race conditions and illegal state transitions.
+
+Core integrity safeguards include:
+1. **Single source of truth for status fields:** `ServiceRequest.status` and `EscrowPayment.status` are treated as canonical state indicators for business decisions.
+2. **Guarded transition rules:** Application and database checks reject invalid transitions (for example, attempting to move from `FROZEN` directly to artisan withdrawal).
+3. **Atomic update expectations:** Payment release/refund decisions are executed as tightly scoped transactional operations so that status changes and ledger effects remain synchronized.
+4. **Auditability:** Time-stamped state changes support post-dispute review and administrative accountability.
+
+These safeguards are essential to preserve consistency in a digital marketplace where trust depends on predictable, tamper-resistant transaction outcomes.
+
 ## 3.5 Artificial Intelligence Integration
 ArtisanConnect pioneers the integration of AI directly into the operational logic of the informal gig economy, moving far beyond traditional conditional programming or basic chatbots. The AI acts as a sophisticated cognitive layer between the user's unstructured input and the system's structured database.
 
@@ -161,6 +200,18 @@ In a high-volume marketplace, human administrators are rapidly overwhelmed if fo
 2. The chronological breakdown of the conflict and communication breakdown.
 3. Identified breaches of contract by either the artisan (e.g., non-completion) or the customer (e.g., expanding scope without payment).
 This drastically reduces the cognitive load on administrators, allowing them to adjudicate complex disputes in seconds rather than minutes, while maintaining ultimate human authority over the final financial outcome.
+
+
+### 3.5.3 AI Governance, Reliability, and Human Oversight
+The AI layer was designed as a **decision-support system**, not a fully autonomous adjudicator. For search, semantic embeddings are used to improve intent capture beyond keyword matching, consistent with evidence that sentence-level representations preserve richer contextual meaning for retrieval tasks (Reimers & Gurevych, 2019, DOI: https://doi.org/10.18653/v1/D19-1410).
+
+For dispute workflows, the design intentionally preserves a human-in-the-loop control model. Prior work on AI-enabled online dispute resolution emphasizes that AI can improve triage speed and structure, but human oversight remains essential for fairness and legitimacy in contested cases (Carneiro et al., 2012, DOI: https://doi.org/10.1007/s10462-011-9305-z).
+
+Operational controls applied in ArtisanConnect include:
+- Prompt constraints that force grounded summaries from provided chat logs.
+- Structured output formats (JSON) to improve consistency for admin review.
+- Manual administrator approval before any irreversible escrow decision.
+- Error fallback paths when AI output confidence is low or malformed.
 
 ## 3.6 System Requirements
 Before development commenced, the functional and non-functional requirements were strictly defined to guide the architecture.
@@ -181,6 +232,20 @@ Non-functional requirements define the quality attributes and performance metric
 3. **Usability:** The interface must be highly intuitive, utilizing a mobile-first paradigm (bottom navigation bar) to cater to users with limited technical proficiency.
 4. **Reliability:** The escrow state machine must maintain ACID compliance at the database level to ensure zero financial discrepancies during concurrent transactions.
 
+
+### 3.6.3 Requirements Traceability Matrix (Objective Alignment)
+To maintain methodological coherence, each major requirement was mapped to the project objectives:
+
+| Objective (Chapter 1) | Related Requirement(s) | Design Artifact in Chapter 3 |
+|---|---|---|
+| Secure escrow workflow | 3.6.1(4), 3.6.2(2), 3.6.2(4) | Escrow lifecycle sequence + state machine |
+| AI-assisted artisan discovery | 3.6.1(5), 3.6.2(1), 3.6.2(3) | Hybrid search pipeline architecture |
+| Identity and trust strengthening | 3.6.1(1), 3.6.1(2), 3.6.2(2) | Actor model + role-controlled access |
+| Faster dispute operations | 3.6.1(6), 3.6.2(4) | ODR summarization workflow |
+| Mobile-first inclusion | 3.6.2(1), 3.6.2(3) | Bottom navigation and responsive UI strategy |
+
+This traceability demonstrates that system requirements were not isolated technical lists; they were directly tied to the stated research objectives and implementation priorities.
+
 ## 3.7 User Interface (UI) and Experience (UX) Design
 Recognizing that the overwhelming majority of Ghanaian users access the internet exclusively via affordable mobile devices, the UI was strictly conceptualized using a "Mobile-First" paradigm.
 
@@ -189,3 +254,21 @@ A critical UX innovation in ArtisanConnect is the implementation of a dynamic **
 > **[INSERT SCREENSHOT HERE: High-fidelity mockup or wireframe of the Mobile UI showing the Bottom Navigation Bar]**
 
 > **[INSERT SCREENSHOT HERE: High-fidelity mockup or wireframe of the Desktop UI showing the Top Navigation Bar]**
+
+
+### 3.7.1 Accessibility and One-Handed Interaction Rationale
+The mobile-first navigation decision was further informed by ergonomic smartphone research showing that device size and grip posture significantly influence one-handed reachability and interaction comfort (Hwangbo et al., 2020, DOI: https://doi.org/10.3390/app10238374). For the ArtisanConnect context, this supports placing high-frequency actions within lower-screen thumb zones, reducing interaction effort for users operating on larger low-cost Android devices.
+
+### 3.7.2 UI Evaluation Criteria Used During Design Iterations
+During iterative design reviews, the interface was checked against practical criteria:
+1. **Task Completion Clarity:** Can first-time users discover search, quote, and dispute actions without guidance?
+2. **Navigation Efficiency:** Are core tasks reachable within minimal taps from the home view?
+3. **Error Prevention:** Are critical payment-state actions clearly distinguished from reversible actions?
+4. **Role Consistency:** Do customer, artisan, and admin interfaces expose only role-relevant controls?
+
+Applying these criteria early reduced downstream implementation rework and improved alignment between UX decisions and system safety goals.
+
+## 3.8 Chapter Summary
+This chapter presented the end-to-end methodology and design logic used to develop ArtisanConnect as a Ghana-focused, trust-centered digital marketplace. The methodology combined Agile iteration with artifact-focused system development; the architecture applied layered security and institution-based trust principles; the data model enforced escrow-safe state transitions; and the AI layer was integrated with explicit human oversight for accountability.
+
+Overall, the expanded design demonstrates that the platform is not merely a software prototype but a structured socio-technical intervention targeted at real constraints in Ghana's informal service economy.
