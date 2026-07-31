@@ -17,3 +17,13 @@
 **Vercel. (2024).** *Next.js 14 App Router and Server Components Documentation*. Vercel Inc. Retrieved from https://nextjs.org/docs
 
 **World Bank. (2020).** *Exploring the Gig Economy in Africa: Opportunities and Challenges for the Future of Work*. World Bank Group. Washington, DC.
+
+**Aker, J. C., & Mbiti, I. M. (2010).** *Mobile Phones and Economic Development in Africa*. Journal of Economic Perspectives, 24(3), 207–232. DOI: https://doi.org/10.1257/jep.24.3.207
+
+**Hjort, J., & Poulsen, J. (2019).** *The Arrival of Fast Internet and Employment in Africa*. American Economic Review, 109(3), 1032–1079. DOI: https://doi.org/10.1257/aer.20161385
+
+**Jack, W., & Suri, T. (2014).** *Risk Sharing and Transactions Costs: Evidence from Kenya’s Mobile Money Revolution*. American Economic Review, 104(1), 183–223. DOI: https://doi.org/10.1257/aer.104.1.183
+
+**La Porta, R., & Shleifer, A. (2014).** *Informality and Development*. Journal of Economic Perspectives, 28(3), 109–126. DOI: https://doi.org/10.1257/jep.28.3.109
+
+**Pavlou, P. A., & Gefen, D. (2004).** *Building Effective Online Marketplaces with Institution-Based Trust*. Information Systems Research, 15(1), 37–59. DOI: https://doi.org/10.1287/isre.1040.0015
