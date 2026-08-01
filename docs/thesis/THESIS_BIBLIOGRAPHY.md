@@ -18,6 +18,16 @@
 
 **World Bank. (2020).** *Exploring the Gig Economy in Africa: Opportunities and Challenges for the Future of Work*. World Bank Group. Washington, DC.
 
+**Carneiro, D., Novais, P., Neves, J., Andrade, F., & Zeleznikow, J. (2012).** *Online dispute resolution: an artificial intelligence perspective*. Artificial Intelligence Review, 41, 211-240. DOI: https://doi.org/10.1007/s10462-011-9305-z
+
+**Dybå, T., & Dingsøyr, T. (2008).** *Empirical studies of agile software development: A systematic review*. Information and Software Technology, 50(9-10), 833-859. DOI: https://doi.org/10.1016/j.infsof.2008.01.006
+
+**Hwangbo, H., Yoon, S. H., Jin, B. S., Han, Y. S., & Ji, Y. G. (2020).** *Effects of smartphone size and hand size on grip posture in one-handed hard key operations*. Applied Sciences, 10(23), 8374. DOI: https://doi.org/10.3390/app10238374
+
+**Pavlou, P. A., & Gefen, D. (2004).** *Building effective online marketplaces with institution-based trust*. Information Systems Research, 15(1), 37-59. DOI: https://doi.org/10.1287/isre.1040.0015
+
+**Reimers, N., & Gurevych, I. (2019).** *Sentence-BERT: Sentence embeddings using Siamese BERT-networks*. Proceedings of EMNLP-IJCNLP. DOI: https://doi.org/10.18653/v1/D19-1410
+
 **Aker, J. C., & Mbiti, I. M. (2010).** *Mobile Phones and Economic Development in Africa*. Journal of Economic Perspectives, 24(3), 207–232. DOI: https://doi.org/10.1257/jep.24.3.207
 
 **Hjort, J., & Poulsen, J. (2019).** *The Arrival of Fast Internet and Employment in Africa*. American Economic Review, 109(3), 1032–1079. DOI: https://doi.org/10.1257/aer.20161385
