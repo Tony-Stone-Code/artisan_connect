@@ -28,3 +28,27 @@
 
 **Reimers, N., & Gurevych, I. (2019).** *Sentence-BERT: Sentence embeddings using Siamese BERT-networks*. Proceedings of EMNLP-IJCNLP. DOI: https://doi.org/10.18653/v1/D19-1410
 
+**Aker, J. C., & Mbiti, I. M. (2010).** *Mobile Phones and Economic Development in Africa*. Journal of Economic Perspectives, 24(3), 207–232. DOI: https://doi.org/10.1257/jep.24.3.207
+
+**Hjort, J., & Poulsen, J. (2019).** *The Arrival of Fast Internet and Employment in Africa*. American Economic Review, 109(3), 1032–1079. DOI: https://doi.org/10.1257/aer.20161385
+
+**Jack, W., & Suri, T. (2014).** *Risk Sharing and Transactions Costs: Evidence from Kenya’s Mobile Money Revolution*. American Economic Review, 104(1), 183–223. DOI: https://doi.org/10.1257/aer.104.1.183
+
+**La Porta, R., & Shleifer, A. (2014).** *Informality and Development*. Journal of Economic Perspectives, 28(3), 109–126. DOI: https://doi.org/10.1257/jep.28.3.109
+
+**Pavlou, P. A., & Gefen, D. (2004).** *Building Effective Online Marketplaces with Institution-Based Trust*. Information Systems Research, 15(1), 37–59. DOI: https://doi.org/10.1287/isre.1040.0015
+---
+
+## Additional Peer-Reviewed Sources Cited in Chapter 5
+
+**Davis, F. D. (1989).** Perceived usefulness, perceived ease of use, and user acceptance of information technology. *MIS Quarterly, 13*(3), 319-340. DOI: https://doi.org/10.2307/249008
+
+**DeLone, W. H., & McLean, E. R. (2003).** The DeLone and McLean model of information systems success: A ten-year update. *Journal of Management Information Systems, 19*(4), 9-30. DOI: https://doi.org/10.2307/30036529
+
+**Graham, M., Hjorth, I., & Lehdonvirta, V. (2017).** Digital labour and development: Impacts of global digital labour platforms and the gig economy on worker livelihoods. *Transfer: European Review of Labour and Research, 23*(2), 135-162. DOI: https://doi.org/10.1177/1024258916687250
+
+**Parasuraman, A., Zeithaml, V. A., & Malhotra, A. (2005).** E-S-QUAL: A multiple-item scale for assessing electronic service quality. *Journal of Service Research, 7*(3), 213-233. DOI: https://doi.org/10.1177/1094670504271156
+
+**Pavlou, P. A., & Gefen, D. (2004).** Building effective online marketplaces with institution-based trust. *Information Systems Research, 15*(1), 37-59. DOI: https://doi.org/10.1287/isre.1040.0015
+
+**Venkatesh, V., Morris, M. G., Davis, G. B., & Davis, F. D. (2003).** User acceptance of information technology: Toward a unified view. *MIS Quarterly, 27*(3), 425-478. DOI: https://doi.org/10.2307/30036540

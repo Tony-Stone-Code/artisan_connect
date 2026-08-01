@@ -450,6 +450,10 @@ To systematically address these challenges, ArtisanConnect was architected utili
 
 The rigorous localized testing of the platform demonstrated unequivocally that a *managed* marketplace—one that proactively arbitrates disputes, verifies identities, and holds funds in trust—can drastically reduce the inherent risks of the informal sector. By transitioning the transactional risk from the individual users to the platform's robust state machine, ArtisanConnect provides a blueprint for formalizing blue-collar gig work.
 
+From an information systems perspective, this outcome is consistent with institution-based trust theory, which shows that platform-level safeguards (clear rules, enforceable controls, and visible governance) can significantly improve user confidence in online transactions (Pavlou & Gefen, 2004, DOI: 10.1287/isre.1040.0015). It is also aligned with digital labour research in developing contexts, where structured platform governance has been shown to influence both worker protection and market participation quality (Graham, Hjorth & Lehdonvirta, 2017, DOI: 10.1177/1024258916687250).
+
+In addition, user-facing simplicity remains central to long-term adoption among mixed digital-literacy populations. The Technology Acceptance Model (TAM) and UTAUT literature emphasizes that perceived usefulness and ease of use are key predictors of intention to adopt digital systems (Davis, 1989, DOI: 10.2307/249008; Venkatesh et al., 2003, DOI: 10.2307/30036540). This directly supports ArtisanConnect's design orientation toward conversational AI search, simplified workflows, and mobile-first interaction patterns.
+
 ## 5.2 Key Achievements
 The development of ArtisanConnect yielded several significant technical and operational achievements:
 
@@ -458,12 +462,18 @@ The development of ArtisanConnect yielded several significant technical and oper
 3. **Automated Dispute Summarization (ODR):** Successfully leveraged Large Language Models (LLMs) to automatically ingest, synthesize, and summarize extensive chat histories during conflict resolution. This demonstrates a highly innovative approach to reducing the administrative overhead and cognitive load required to moderate Peer-to-Peer (P2P) platforms.
 4. **Mobile-Optimized UX Architecture:** Delivered a high-performance, exceptionally responsive User Interface featuring a modern, TikTok-style expanding bottom navigation bar. This UX paradigm caters directly to the predominantly mobile-first demographic of Ghana, ensuring that core functionalities remain highly accessible on budget smartphones with smaller viewports.
 
+These achievements can be interpreted through the DeLone and McLean Information Systems Success Model, where improvements in system quality, information quality, and service quality are expected to improve user satisfaction and net benefits (DeLone & McLean, 2003, DOI: 10.2307/30036529). The combination of escrow reliability, AI-assisted discovery, and structured dispute support therefore represents not just technical completion, but a strong foundation for measurable socio-technical value in a real deployment context.
+
 ## 5.3 Limitations of the Study
 Despite the successful implementation of the core architectural features, the project encountered certain limitations, primarily stemming from academic and infrastructural constraints:
 
 1. **Simulated Financial Transactions:** Due to academic scoping and the severe legal/regulatory complexities of integrating live banking APIs, the escrow system utilizes a simulated gateway. While the internal database state machine is logically sound and robust, the application was not tested against real-world network latency, webhook failures, or the specific API quirks of live payment processors like Paystack or Flutterwave.
 2. **Local Environment Deployment Constraints:** Unforeseen difficulties with dynamic server-side rendering and aggressive caching on free cloud infrastructure tiers (specifically Vercel) restricted the final holistic evaluation to a local development environment (`localhost`). Consequently, large-scale concurrent user load testing and global CDN latency assessments were not feasible.
 3. **Offline Constraints and Connectivity Dependencies:** The platform's current Web App architecture requires continuous, stable internet access. This dependency may prove overly restrictive for artisans working in remote locales or newly developed areas on the outskirts of major Ghanaian cities where mobile network coverage remains sparse or intermittent.
+
+An additional methodological limitation is the absence of a longitudinal user adoption study. Without repeated measurements over time, it is difficult to empirically quantify sustained trust retention, service quality perception shifts, and behavioural intention changes after early onboarding. This matters because technology adoption models show that intention and sustained use are dynamic and can change with experience and contextual constraints (Venkatesh et al., 2003, DOI: 10.2307/30036540).
+
+A further limitation is that explicit service quality instrumentation (for example, structured reliability, responsiveness, and assurance scoring) was not fully integrated into the production-facing interface. Service quality research demonstrates that these dimensions strongly shape user judgments in digital service environments (Parasuraman, Zeithaml & Malhotra, 2005, DOI: 10.1177/1094670504271156), and future evaluations should include them as first-class performance indicators.
 
 ## 5.4 Recommendations and Future Work
 To transition ArtisanConnect from a highly successful academic prototype to a commercially viable, nationwide enterprise in Ghana, the following future enhancements and research directions are strongly recommended:
@@ -473,8 +483,16 @@ To transition ArtisanConnect from a highly successful academic prototype to a co
 3. **Advanced Rating and Review Systems:** Deploying the fully designed `Review` database schema into the public UI. Future work should allow consumers to upload photographic evidence of completed work alongside their 5-star ratings, dynamically building a verifiable, visually rich portfolio for each artisan.
 4. **USSD Code Integration for Rural Expansion:** To bridge the digital divide, integrating a USSD gateway (e.g., *711#) would allow consumers and artisans without smartphones or active data subscriptions to query availability, accept quotes, and receive SMS alerts. This would vastly increase the Total Addressable Market (TAM) by making the platform accessible to the most remote demographics in the country.
 
+5. **Formal Adoption Evaluation Framework:** Future deployments should include a structured adoption evaluation instrument grounded in TAM/UTAUT constructs (perceived usefulness, effort expectancy, social influence, and facilitating conditions) to generate statistically defensible evidence of uptake drivers in the Ghanaian context (Davis, 1989, DOI: 10.2307/249008; Venkatesh et al., 2003, DOI: 10.2307/30036540).
+6. **Trust and Platform Governance Analytics:** Introduce dashboard metrics that continuously track trust and governance signals such as dispute frequency per 100 jobs, escrow release turnaround time, verification-to-booking conversion rate, and repeat transaction rates. This would operationalize institution-based trust as a measurable platform performance domain (Pavlou & Gefen, 2004, DOI: 10.1287/isre.1040.0015).
+7. **Service Quality Benchmarking Layer:** Incorporate an E-S-QUAL-inspired feedback instrument into post-job workflows to quantify efficiency, fulfillment, and responsiveness at scale, thereby enabling evidence-based quality improvement cycles (Parasuraman, Zeithaml & Malhotra, 2005, DOI: 10.1177/1094670504271156).
+
 ## 5.5 Final Conclusion
 The ArtisanConnect project conclusively demonstrates that the integration of advanced artificial intelligence and mathematically rigorous escrow protocols into the informal sector is not only technically feasible but socio-economically vital. By transitioning the digital landscape from open-directory, "buyer-beware" classifieds to a actively managed, trust-centric ecosystem, this platform offers a powerful blueprint for empowering Ghana's blue-collar workforce. Ultimately, systems like ArtisanConnect are essential for formalizing economic growth, elevating consumer confidence, and unlocking the true potential of the digital gig economy in developing nations.
+
+In academic terms, the project also contributes a contextualized design artifact that links trust engineering, AI-enabled discovery, and digitally mediated dispute governance into one coherent socio-technical system. This integration is particularly valuable for Information Technology scholarship in emerging economies, where platform design decisions must simultaneously address technical feasibility, user adoption behaviour, and institutional reliability (DeLone & McLean, 2003, DOI: 10.2307/30036529; Graham, Hjorth & Lehdonvirta, 2017, DOI: 10.1177/1024258916687250).
+
+Overall, the findings support the position that digital marketplace innovation in Ghana should not be evaluated only by matching efficiency, but by the quality of trust infrastructure embedded in the platform lifecycle. With iterative implementation, field validation, and policy-aligned scaling, ArtisanConnect can evolve from a successful bachelor-level prototype into a robust national service model for inclusive digital labour formalization.
 
 
 ---
@@ -655,3 +673,19 @@ While digital gig platforms have revolutionized urban mobility (e.g., Uber), the
 **Vercel. (2024).** *Next.js 14 App Router and Server Components Documentation*. Vercel Inc. Retrieved from https://nextjs.org/docs
 
 **World Bank. (2020).** *Exploring the Gig Economy in Africa: Opportunities and Challenges for the Future of Work*. World Bank Group. Washington, DC.
+
+---
+
+## Additional Peer-Reviewed Sources Cited in Chapter 5
+
+**Davis, F. D. (1989).** Perceived usefulness, perceived ease of use, and user acceptance of information technology. *MIS Quarterly, 13*(3), 319-340. DOI: https://doi.org/10.2307/249008
+
+**DeLone, W. H., & McLean, E. R. (2003).** The DeLone and McLean model of information systems success: A ten-year update. *Journal of Management Information Systems, 19*(4), 9-30. DOI: https://doi.org/10.2307/30036529
+
+**Graham, M., Hjorth, I., & Lehdonvirta, V. (2017).** Digital labour and development: Impacts of global digital labour platforms and the gig economy on worker livelihoods. *Transfer: European Review of Labour and Research, 23*(2), 135-162. DOI: https://doi.org/10.1177/1024258916687250
+
+**Parasuraman, A., Zeithaml, V. A., & Malhotra, A. (2005).** E-S-QUAL: A multiple-item scale for assessing electronic service quality. *Journal of Service Research, 7*(3), 213-233. DOI: https://doi.org/10.1177/1094670504271156
+
+**Pavlou, P. A., & Gefen, D. (2004).** Building effective online marketplaces with institution-based trust. *Information Systems Research, 15*(1), 37-59. DOI: https://doi.org/10.1287/isre.1040.0015
+
+**Venkatesh, V., Morris, M. G., Davis, G. B., & Davis, F. D. (2003).** User acceptance of information technology: Toward a unified view. *MIS Quarterly, 27*(3), 425-478. DOI: https://doi.org/10.2307/30036540
