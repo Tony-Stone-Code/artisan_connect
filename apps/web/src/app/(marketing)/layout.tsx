@@ -1,11 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { Home, Briefcase, Search, Info, User as UserIcon } from 'lucide-react';
+import { Home, Briefcase, Search, Info, User as UserIcon, Menu, X } from 'lucide-react';
 
 export default function MarketingLayout({
   children,
@@ -14,6 +15,7 @@ export default function MarketingLayout({
 }) {
   const { user, isLoading } = useAuth();
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col selection:bg-primary/30 selection:text-primary">
@@ -54,87 +56,114 @@ export default function MarketingLayout({
 
           <div className="flex flex-1 items-center justify-end space-x-2">
             <ThemeToggle />
-            {!isLoading && (
-              <>
-                {user ? (
-                  <div className="flex items-center space-x-2">
-                    <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"}>
-                      <Button>{user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "Admin Panel" : "Dashboard"}</Button>
-                    </Link>
-                    <Button 
-                      variant="ghost" 
-                      onClick={async () => {
-                        const { createClient } = await import('@/lib/supabase/client');
-                        const supabase = createClient();
-                        await supabase.auth.signOut();
-                        window.location.href = '/';
-                      }} 
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      Logout
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <Link href="/login" className="hidden sm:block">
-                      <Button variant="ghost" className="font-semibold hover:bg-muted/50 rounded-full px-6">Log in</Button>
-                    </Link>
-                    <Link href="/register">
-                      <Button className="rounded-full font-semibold px-4 sm:px-6 shadow-sm">Get Started</Button>
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
+            
+            {/* Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center space-x-2">
+              {!isLoading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"}>
+                        <Button className="rounded-none">{user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "Admin Panel" : "Dashboard"}</Button>
+                      </Link>
+                      <Button 
+                        variant="ghost" 
+                        onClick={async () => {
+                          const { createClient } = await import('@/lib/supabase/client');
+                          const supabase = createClient();
+                          await supabase.auth.signOut();
+                          window.location.href = '/';
+                        }} 
+                        className="text-muted-foreground hover:text-foreground rounded-none"
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login">
+                        <Button variant="ghost" className="font-semibold hover:bg-muted/50 rounded-none px-6">Log in</Button>
+                      </Link>
+                      <Link href="/register">
+                        <Button className="rounded-none font-semibold px-6 shadow-none border border-primary">Get Started</Button>
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden rounded-none"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
         </div>
 
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t bg-background p-4 space-y-4 shadow-md">
+            <nav className="flex flex-col space-y-3">
+              <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold hover:text-primary transition-colors py-2 border-b">
+                Services
+              </Link>
+              <Link href="/artisans" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold hover:text-primary transition-colors py-2 border-b">
+                Find Artisans
+              </Link>
+              <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold hover:text-primary transition-colors py-2 border-b">
+                Our Story
+              </Link>
+            </nav>
+            <div className="flex flex-col space-y-2 pt-2">
+              {!isLoading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"} onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="w-full rounded-none">{user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "Admin Panel" : "Dashboard"}</Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        onClick={async () => {
+                          const { createClient } = await import('@/lib/supabase/client');
+                          const supabase = createClient();
+                          await supabase.auth.signOut();
+                          window.location.href = '/';
+                        }} 
+                        className="w-full rounded-none"
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full rounded-none">Log in</Button>
+                      </Link>
+                      <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="w-full rounded-none">Get Started</Button>
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </header>
-      <main className="flex-1 md:pb-0 pb-20">{children}</main>
-      <footer className="border-t py-6 md:py-0 pb-24 md:pb-0">
+      <main className="flex-1">{children}</main>
+      <footer className="border-t py-6 md:py-0">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row px-4 md:px-6">
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
             This project is built by <a href="https://gammacube.vercel.app" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4 hover:text-primary transition-colors">GammaCube</a>.
           </p>
         </div>
       </footer>
-
-      {/* Mobile Bottom Navigation Bar (TikTok Vibe) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t flex items-center justify-around pb-safe pt-2 px-2 shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <Link href="/" className={`group flex flex-col items-center p-2 ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
-          <Home className="w-6 h-6" />
-          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname === '/' ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Home</span>
-        </Link>
-        <Link href="/services" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/services') ? 'text-primary' : 'text-muted-foreground'}`}>
-          <Briefcase className="w-6 h-6" />
-          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/services') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Services</span>
-        </Link>
-        
-        {/* Prominent Center Button */}
-        <Link href="/artisans" className="group flex flex-col items-center -mt-5">
-          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border-4 border-background">
-            <Search className="w-6 h-6" />
-          </div>
-          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/artisans') ? 'text-primary max-h-4 opacity-100 mt-1' : 'text-muted-foreground max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Search</span>
-        </Link>
-        
-        <Link href="/about" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/about') ? 'text-primary' : 'text-muted-foreground'}`}>
-          <Info className="w-6 h-6" />
-          <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/about') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>About</span>
-        </Link>
-
-        {user ? (
-          <Link href={user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN' ? "/admin" : "/dashboard"} className={`group flex flex-col items-center p-2 ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>
-            <UserIcon className="w-6 h-6" />
-            <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/dashboard') || pathname.startsWith('/admin') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Profile</span>
-          </Link>
-        ) : (
-          <Link href="/login" className={`group flex flex-col items-center p-2 ${pathname.startsWith('/login') ? 'text-primary' : 'text-muted-foreground'}`}>
-            <UserIcon className="w-6 h-6" />
-            <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/login') ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Log In</span>
-          </Link>
-        )}
-      </nav>
     </div>
   );
 }

@@ -40,14 +40,6 @@ async function ArtisanGrid({ query, view }: { query?: string, view?: string }) {
     );
   }
 
-  if (view === 'explore') {
-    return (
-      <div className="w-full max-w-[600px] mx-auto pb-20 md:pb-0">
-        <ArtisanExplore artisans={artisans} />
-      </div>
-    );
-  }
-
   if (view === 'grid') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 md:px-6 max-w-7xl mx-auto pb-24">
@@ -58,18 +50,13 @@ async function ArtisanGrid({ query, view }: { query?: string, view?: string }) {
     );
   }
 
-  // Auto view (responsive)
+  // Auto view (responsive list/grid)
   return (
-    <>
-      <div className="md:hidden w-full max-w-[600px] mx-auto pb-20">
-        <ArtisanExplore artisans={artisans} />
-      </div>
-      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 md:px-6 max-w-7xl mx-auto pb-24">
-        {artisans.map((artisan: any) => (
-          <ArtisanCard key={artisan.id} artisan={artisan} />
-        ))}
-      </div>
-    </>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 md:px-6 max-w-7xl mx-auto pb-24">
+      {artisans.map((artisan: any) => (
+        <ArtisanCard key={artisan.id} artisan={artisan} />
+      ))}
+    </div>
   );
 }
 
