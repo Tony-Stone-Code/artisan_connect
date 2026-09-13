@@ -48,7 +48,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="border-border">
+    <Card className="border-2 border-border rounded-none shadow-none">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl tracking-tight">Welcome back</CardTitle>
         <CardDescription>

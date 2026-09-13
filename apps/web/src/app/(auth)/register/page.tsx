@@ -84,7 +84,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="border-border">
+    <Card className="border-2 border-border rounded-none shadow-none mt-8 md:mt-0">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl tracking-tight">Create an account</CardTitle>
         <CardDescription>

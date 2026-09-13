@@ -102,20 +102,18 @@ export default async function ArtisansPage({
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-primary/10 via-background to-background pt-20 pb-16 overflow-hidden">
+      <section className="relative bg-muted pt-20 pb-16 overflow-hidden border-b">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <Badge variant="outline" className="mb-4 bg-background/50 backdrop-blur-sm border-primary/20 text-primary">
-              Directory
-            </Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
-              Find Trusted <span className="text-primary">Artisans</span> Near You
+          <div className="text-center max-w-3xl mx-auto border border-border bg-background p-8 mb-8">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-wide mb-4">
+              Professional Service <span className="text-primary">Directory</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10">
-              Browse our curated directory of verified professionals, read real customer reviews, and book services with confidence.
+            <div className="w-16 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="text-base md:text-lg text-muted-foreground mb-10">
+              Access a standardized index of verified professionals. Evaluate performance metrics and formalize service engagements.
             </p>
-            <Suspense fallback={<div className="h-14 w-full max-w-lg mx-auto bg-muted/40 animate-pulse rounded-full" />}>
+            <Suspense fallback={<div className="h-14 w-full max-w-lg mx-auto bg-muted/40 animate-pulse rounded-none border border-border" />}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto">
                 <div className="flex-1 w-full">
                   <ArtisanSearch />

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Heart, Share2, ShieldCheck, MapPin, MessageCircle, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -24,10 +25,10 @@ export function ArtisanExploreItem({ artisan }: ArtisanExploreItemProps) {
   // Use avatar or a gradient if missing
   const bgImage = artisan.user.avatar_url && !imageError ? artisan.user.avatar_url : null;
   const fallbackGradients = [
-    'from-blue-900 to-indigo-900',
-    'from-emerald-900 to-teal-900',
-    'from-orange-900 to-red-900',
-    'from-purple-900 to-pink-900'
+    'from-slate-800 to-slate-900',
+    'from-stone-800 to-stone-900',
+    'from-zinc-800 to-zinc-900',
+    'from-neutral-800 to-neutral-900'
   ];
   const gradientIndex = artisan.id.charCodeAt(0) % fallbackGradients.length;
   const fallbackGradient = fallbackGradients[gradientIndex];
@@ -37,11 +38,13 @@ export function ArtisanExploreItem({ artisan }: ArtisanExploreItemProps) {
       {/* Background Media */}
       <div className={`absolute inset-0 w-full h-full ${bgImage ? '' : `bg-gradient-to-br ${fallbackGradient}`}`}>
         {bgImage && (
-          <img 
+          <Image 
             src={bgImage} 
             alt={displayName}
+            fill
+            sizes="100vw"
             onError={() => setImageError(true)}
-            className="w-full h-full object-cover opacity-80"
+            className="object-cover opacity-80"
           />
         )}
       </div>
@@ -107,9 +110,9 @@ export function ArtisanExploreItem({ artisan }: ArtisanExploreItemProps) {
           <div className="flex flex-col items-center gap-6 pb-4">
             {/* Avatar Profile Link */}
             <Link href={`/artisans/${artisan.id}`} className="relative group">
-              <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-muted flex items-center justify-center shadow-xl">
+              <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-muted flex items-center justify-center shadow-xl relative">
                 {bgImage ? (
-                  <img src={bgImage} alt={displayName} className="w-full h-full object-cover" />
+                  <Image src={bgImage} alt={displayName} fill sizes="48px" className="object-cover" />
                 ) : (
                   <span className="text-muted-foreground font-bold">{initials}</span>
                 )}

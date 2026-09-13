@@ -10,6 +10,7 @@ interface ArtisanCardProps {
 }
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function ArtisanCard({ artisan }: ArtisanCardProps) {
   const [imageError, setImageError] = useState(false);
@@ -30,9 +31,11 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
           <div className="h-24 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent relative">
             <div className="absolute -bottom-10 left-6">
               {artisan.user.avatar_url && !imageError ? (
-                <img 
+                <Image 
                   src={artisan.user.avatar_url} 
                   alt={displayName} 
+                  width={80}
+                  height={80}
                   onError={() => setImageError(true)}
                   className="w-20 h-20 rounded-full border-4 border-card object-cover bg-muted"
                 />

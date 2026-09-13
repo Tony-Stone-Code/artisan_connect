@@ -377,7 +377,7 @@ The implementation follows this secure algorithmic flow:
 4. Simultaneously, the parent `ServiceRequest` status is advanced to `IN_PROGRESS`.
 5. This simulates that funds are locked securely within the platform's virtual vault. The artisan is notified to commence work, explicitly restricted from withdrawing the `HELD` funds until the customer signs off.
 
-> **[INSERT SCREENSHOT HERE: Escrow Payment Simulation UI - e.g., the 'Accept & Pay' button or 'Funds Held' status]**
+> ![Escrow Payment UI](./images/escrow_payment_mechanism.png)
 
 ### 4.3.2 AI-Powered Hybrid Search Implementation
 The ArtisanConnect search functionality fundamentally shifts away from rigid database queries toward intent-based discovery. 

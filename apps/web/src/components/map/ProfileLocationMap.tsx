@@ -38,7 +38,7 @@ export default function ProfileLocationMap({ latitude, longitude, businessName }
 
       // Create a premium pulsing marker element
       const el = document.createElement('div');
-      el.className = 'relative w-6 h-6 bg-primary border-2 border-white rounded-full shadow-[0_0_15px_rgba(109,40,217,0.6)] z-10 flex items-center justify-center';
+      el.className = 'relative w-6 h-6 bg-primary border-2 border-white rounded-full shadow-md z-10 flex items-center justify-center';
       
       const pulseRing = document.createElement('div');
       pulseRing.className = 'absolute -inset-3 bg-primary/30 rounded-full animate-ping';

@@ -78,13 +78,13 @@ export default function DashboardLayout({
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-background/80 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 bottom-0 left-0 z-50 w-64 border-r bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 transition-transform md:sticky md:block ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed top-0 bottom-0 left-0 z-50 w-64 border-r bg-background transition-transform md:sticky md:block ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex h-20 items-center border-b px-6 gap-3">
           <div className="w-8 h-8 bg-primary text-primary-foreground rounded-lg flex items-center justify-center font-bold text-lg">A</div>
           <Link href="/" className="flex items-center font-bold text-xl tracking-tight">
@@ -139,7 +139,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex h-20 items-center justify-between border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 shadow-sm z-40 sticky top-0">
+        <header className="flex h-20 items-center justify-between border-b bg-background px-4 md:px-6 shadow-sm z-40 sticky top-0">
           <button
             className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground"
             onClick={() => setIsSidebarOpen(true)}

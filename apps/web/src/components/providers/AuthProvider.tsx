@@ -23,18 +23,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   useEffect(() => {
+    // 1. Instantly hydrate from cache if available to prevent UI blocking
+    const cachedUser = localStorage.getItem('artisan_user_cache');
+    if (cachedUser) {
+      try {
+        setUser(JSON.parse(cachedUser));
+        setIsLoading(false);
+      } catch (e) {
+        console.error('Failed to parse cached user', e);
+      }
+    }
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Update cache
+      if (session?.user) {
+        localStorage.setItem('artisan_user_cache', JSON.stringify(session.user));
+      } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('artisan_user_cache');
+      }
+      
       setIsLoading(false);
     });
 
-    // Initial session fetch
+    // Initial session fetch from server to ensure validity
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        localStorage.setItem('artisan_user_cache', JSON.stringify(session.user));
+      }
+      
       setIsLoading(false);
     });
 

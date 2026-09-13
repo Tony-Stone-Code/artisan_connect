@@ -67,6 +67,13 @@ const demoUsers = [
     firstName: 'Jane',
     lastName: 'Customer',
     role: 'CUSTOMER'
+  },
+  {
+    email: 'admin@demo.com',
+    password: 'password123',
+    firstName: 'System',
+    lastName: 'Administrator',
+    role: 'ADMIN'
   }
 ]
 

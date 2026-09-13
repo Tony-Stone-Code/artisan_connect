@@ -64,22 +64,31 @@ export async function submitIdentity(data: {
 
   if (!profile) return { error: 'Artisan profile not found' }
 
-  await prisma.artisanIdentity.upsert({
-    where: { artisan_id: profile.id },
-    update: {
-      ghana_card_no: data.ghana_card_no,
-      card_image_url: data.card_image_url,
-      selfie_url: data.selfie_url,
-      status: 'PENDING'
-    },
-    create: {
-      artisan_id: profile.id,
-      ghana_card_no: data.ghana_card_no,
-      card_image_url: data.card_image_url,
-      selfie_url: data.selfie_url,
-      status: 'PENDING'
+  try {
+    await prisma.artisanIdentity.upsert({
+      where: { artisan_id: profile.id },
+      update: {
+        ghana_card_no: data.ghana_card_no,
+        card_image_url: data.card_image_url,
+        selfie_url: data.selfie_url,
+        status: 'PENDING'
+      },
+      create: {
+        artisan_id: profile.id,
+        ghana_card_no: data.ghana_card_no,
+        card_image_url: data.card_image_url,
+        selfie_url: data.selfie_url,
+        status: 'PENDING'
+      }
+    })
+  } catch (err: any) {
+    // When using @prisma/adapter-pg, err.meta.target is often undefined for UniqueConstraintViolation
+    if (err.code === 'P2002') {
+      return { error: 'This Ghana Card number is already registered to another account.' }
     }
-  })
+    console.error('Failed to submit identity:', err)
+    return { error: 'Failed to submit identity verification. Please try again.' }
+  }
 
   revalidatePath('/dashboard/identity')
   return { success: true }

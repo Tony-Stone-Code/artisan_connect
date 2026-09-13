@@ -6,7 +6,6 @@ import { getUnreadMessageCount } from '@/app/actions/messages';
 
 export function MessageBadge() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const supabase = createClient();
 
   const fetchUnreadCount = async () => {
     try {
@@ -20,6 +19,8 @@ export function MessageBadge() {
   useEffect(() => {
     // Initial fetch
     fetchUnreadCount();
+
+    const supabase = createClient();
 
     // Subscribe to any changes on the Message table
     const channel = supabase
@@ -37,7 +38,7 @@ export function MessageBadge() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, []); // Remove supabase from dependency array and initialize inside
 
   if (unreadCount === 0) return null;
 

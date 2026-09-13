@@ -31,8 +31,12 @@ export default function RequestsPage() {
     const fetchRequests = async () => {
       try {
         const result = await getRequests();
+        if (result.error === 'Unauthorized') {
+          window.location.href = '/auth/login';
+          return;
+        }
         if (result.error) throw new Error(result.error);
-        setRequests(result.requests as any);
+        setRequests(result.requests || []);
       } catch (error) {
         console.error('Failed to fetch requests', error);
       } finally {

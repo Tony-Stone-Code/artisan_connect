@@ -17,11 +17,11 @@ export default function MarketingLayout({
 
   return (
     <div className="flex min-h-screen flex-col selection:bg-primary/30 selection:text-primary">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/40 transition-all shadow-sm">
+      <header className="sticky top-0 z-50 w-full border-b bg-background transition-all shadow-sm">
         <div className="container mx-auto flex h-20 items-center px-4 md:px-6">
           <div className="mr-4 hidden md:flex items-center gap-8">
             <Link href="/" className="flex items-center space-x-2 mr-4 group">
-              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-lg flex items-center justify-center font-bold text-lg group-hover:rotate-12 transition-transform">
+              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-lg flex items-center justify-center font-bold text-lg">
                 A
               </div>
               <span className="hidden font-bold sm:inline-block text-xl tracking-tight">
@@ -80,7 +80,7 @@ export default function MarketingLayout({
                       <Button variant="ghost" className="font-semibold hover:bg-muted/50 rounded-full px-6">Log in</Button>
                     </Link>
                     <Link href="/register">
-                      <Button className="rounded-full font-semibold px-4 sm:px-6 shadow-md shadow-primary/20 hover:-translate-y-0.5 transition-transform">Get Started</Button>
+                      <Button className="rounded-full font-semibold px-4 sm:px-6 shadow-sm">Get Started</Button>
                     </Link>
                   </>
                 )}
@@ -100,7 +100,7 @@ export default function MarketingLayout({
       </footer>
 
       {/* Mobile Bottom Navigation Bar (TikTok Vibe) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t flex items-center justify-around pb-safe pt-2 px-2 shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t flex items-center justify-around pb-safe pt-2 px-2 shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <Link href="/" className={`group flex flex-col items-center p-2 ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
           <Home className="w-6 h-6" />
           <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname === '/' ? 'max-h-4 opacity-100 mt-1' : 'max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Home</span>
@@ -112,7 +112,7 @@ export default function MarketingLayout({
         
         {/* Prominent Center Button */}
         <Link href="/artisans" className="group flex flex-col items-center -mt-5">
-          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg border-4 border-background group-hover:scale-105 transition-transform">
+          <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border-4 border-background">
             <Search className="w-6 h-6" />
           </div>
           <span className={`text-[10px] font-medium transition-all duration-300 overflow-hidden ${pathname.startsWith('/artisans') ? 'text-primary max-h-4 opacity-100 mt-1' : 'text-muted-foreground max-h-0 opacity-0 group-hover:max-h-4 group-hover:opacity-100 group-hover:mt-1'}`}>Search</span>

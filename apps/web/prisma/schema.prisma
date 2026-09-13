@@ -101,6 +101,8 @@ model CustomerProfile {
   requests   ServiceRequest[]
   reviews    Review[]
   favorites  FavoriteArtisan[]
+
+  @@index([user_id])
 }
 
 model ArtisanProfile {
@@ -127,6 +129,8 @@ model ArtisanProfile {
   quotes             Quote[]
   reviews            Review[]
   favorites_by       FavoriteArtisan[]
+
+  @@index([user_id])
 }
 
 model AdminProfile {
@@ -137,6 +141,8 @@ model AdminProfile {
 
   audit_logs AuditLog[]
   reports    Report[] @relation("AssignedAdmin")
+
+  @@index([user_id])
 }
 
 model ArtisanIdentity {
@@ -149,6 +155,8 @@ model ArtisanIdentity {
   status        IdentityStatus @default(PENDING)
   verified_at   DateTime?
   notes         String?
+
+  @@index([artisan_id])
 }
 
 model Category {
@@ -168,6 +176,8 @@ model Subcategory {
   description String?
 
   services    ArtisanService[]
+
+  @@index([category_id])
 }
 
 model ArtisanService {
@@ -180,6 +190,9 @@ model ArtisanService {
   price_min      Decimal?        @db.Decimal(10, 2)
   price_max      Decimal?        @db.Decimal(10, 2)
   // embedding      Unsupported("vector(1024)")?
+
+  @@index([artisan_id])
+  @@index([subcategory_id])
 }
 
 model PortfolioItem {
@@ -192,6 +205,8 @@ model PortfolioItem {
   before_image_url String?
   after_image_url  String?
   created_at  DateTime       @default(now())
+
+  @@index([artisan_id])
 }
 
 model AvailabilitySchedule {
@@ -202,6 +217,8 @@ model AvailabilitySchedule {
   start_time  DateTime       @db.Time()
   end_time    DateTime       @db.Time()
   is_active   Boolean        @default(true)
+
+  @@index([artisan_id])
 }
 
 model ServiceRequest {
@@ -223,6 +240,9 @@ model ServiceRequest {
   quotes        Quote[]
   review        Review?
   messages      Message[]
+
+  @@index([customer_id])
+  @@index([artisan_id])
 }
 
 model Quote {
@@ -239,6 +259,9 @@ model Quote {
   updated_at  DateTime       @updatedAt
 
   escrow      EscrowPayment?
+
+  @@index([request_id])
+  @@index([artisan_id])
 }
 
 model EscrowPayment {
@@ -251,6 +274,8 @@ model EscrowPayment {
   payment_ref String         @unique
   created_at  DateTime       @default(now())
   released_at DateTime?
+
+  @@index([quote_id])
 }
 
 model Review {
@@ -265,6 +290,10 @@ model Review {
   comment     String?
   sentiment   String?        // Positive, Neutral, Negative
   created_at  DateTime       @default(now())
+
+  @@index([request_id])
+  @@index([customer_id])
+  @@index([artisan_id])
 }
 
 model Message {
@@ -275,6 +304,9 @@ model Message {
   content     String
   is_read     Boolean        @default(false)
   created_at  DateTime       @default(now())
+
+  @@index([request_id])
+  @@index([sender_id])
 }
 
 model FavoriteArtisan {
@@ -286,6 +318,8 @@ model FavoriteArtisan {
   created_at  DateTime       @default(now())
 
   @@unique([customer_id, artisan_id])
+  @@index([customer_id])
+  @@index([artisan_id])
 }
 
 model Report {
@@ -301,6 +335,10 @@ model Report {
   ai_summary  String?
   created_at  DateTime       @default(now())
   updated_at  DateTime       @updatedAt
+
+  @@index([reporter_id])
+  @@index([target_id, target_type])
+  @@index([assigned_to])
 }
 
 model AuditLog {
@@ -313,6 +351,9 @@ model AuditLog {
   details     Json?
   ip_address  String?
   created_at  DateTime       @default(now())
+
+  @@index([admin_id])
+  @@index([target_id, target_type])
 }
 
 model Notification {
@@ -325,6 +366,8 @@ model Notification {
   is_read     Boolean        @default(false)
   data        Json?
   created_at  DateTime       @default(now())
+
+  @@index([user_id])
 }
 
 model AiInteraction {

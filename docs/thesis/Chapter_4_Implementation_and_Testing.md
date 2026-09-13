@@ -32,10 +32,9 @@ The implementation follows this secure algorithmic flow:
 3. Utilizing Prisma, the action initiates a database transaction. It creates a new `EscrowPayment` record linked to the quote, strictly setting its initial status to `HELD`.
 4. Simultaneously, the parent `ServiceRequest` status is advanced to `IN_PROGRESS`.
 5. This simulates that funds are locked securely within the platform's virtual vault. The artisan is notified to commence work, explicitly restricted from withdrawing the `HELD` funds until the customer signs off.
-
 This design follows foundational transaction-processing principles where consistency and recoverability are preserved through atomic state transitions, reducing corruption risk during partial failures (Härder & Reuter, 1983, DOI: 10.1145/289.291). The explicit transition guards also align with established database isolation analysis showing that unconstrained concurrent writes can produce invalid business outcomes (Berenson et al., 1995, DOI: 10.1145/223784.223785).
 
-> **[INSERT SCREENSHOT HERE: Escrow Payment Simulation UI - e.g., the 'Accept & Pay' button or 'Funds Held' status]**
+> ![Escrow Payment UI](./images/escrow_payment_mechanism.png)
 
 ### 4.3.2 AI-Powered Hybrid Search Implementation
 The ArtisanConnect search functionality fundamentally shifts away from rigid database queries toward intent-based discovery. 
@@ -50,7 +49,21 @@ The hybrid strategy was selected because semantic encoders are empirically bette
 
 > **[INSERT SCREENSHOT HERE: AI Search Bar and Results - showing a natural language query yielding specific artisans]**
 
-### 4.3.3 Identity Verification Flow
+### 4.3.3 Interactive Geolocation and Mapbox Integration
+To solve the geographical disconnect between customers and artisans, a robust mapping module was implemented using the Mapbox GL JS library. 
+1. The database seeds artisan profiles with specific latitude and longitude coordinates.
+2. The frontend incorporates an interactive `<ArtisanMap />` component that dynamically plots these coordinates in real-time.
+3. Custom-styled map markers (premium teardrop pins utilizing the platform's primary color palette) were engineered using raw CSS and injected directly into the Mapbox canvas.
+4. The map supports "Locate Me" functionality, requesting the user's geolocation API to center the map precisely on their neighborhood, instantly revealing the closest verified artisans.
+
+### 4.3.4 Real-Time WebSockets Architecture
+Standard HTTP polling is incredibly resource-intensive and leads to a sluggish user experience. To ensure instantaneous communication between customers and artisans, a true Real-Time Notifications system was built.
+1. The system utilizes Supabase Realtime, which connects directly to the PostgreSQL replication stream.
+2. A global client-side listener (`<MessageBadge />`) opens a secure WebSocket connection listening strictly for `INSERT` events on the `Message` table.
+3. When a new message arrives, the client instantly recalculates the unread message count and injects a dynamic notification badge into the dashboard sidebar.
+4. To ensure data hygiene, the badge auto-clears the moment a user accesses the specific chat thread via a server action (`markMessagesAsRead`), all without requiring a full page refresh.
+
+### 4.3.5 Identity Verification Flow
 To combat the profound trust deficit identified in Chapter 2, a stringent identity verification workflow was implemented.
 1. Artisans upload their Ghana Card identification number and a biometric selfie via the dashboard.
 2. The system immediately flags the `ArtisanIdentity` database record as `PENDING`, heavily restricting the artisan's visibility on the public platform.

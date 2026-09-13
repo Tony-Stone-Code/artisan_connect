@@ -21,6 +21,7 @@ export default function DashboardOverview() {
             src="/images/dashboard_hero_1782323582441.png"
             alt="Dashboard Welcome"
             fill
+            priority
             className="object-cover"
           />
         </div>

@@ -92,3 +92,26 @@ This document contains a structured slide outline and corresponding speaker note
 - **Practice the Demo:** Run through the dual-browser demo 3-4 times before the actual defense so your mouse movements are smooth and confident.
 - **Don't Panic on Errors:** If something glitches during the live demo (it happens to the best of us!), confidently say, *"As with any live software environment, we occasionally hit a timeout, but the standard flow operates exactly as shown."* and move on.
 - **Focus on the "Why":** The judges will care about the code, but they care *more* about the problem you are solving. Emphasize how the AI Search and Map features solve the specific pain points of finding artisans in Ghana.
+
+---
+
+## 🛑 Appendix: Environment Setup & Troubleshooting (Crucial for Running on Another Computer)
+
+If you (or your supervisor) attempt to open and run this project in a different IDE (like VS Code instead of WebStorm) or on a completely different computer, it **will fail to run** unless you follow these specific environment setup steps:
+
+### 1. The Missing `.env.local` File
+For security reasons, your `.env.local` file (which contains the Supabase connection strings, passwords, and the Google Gemini API key) is never pushed to GitHub. 
+* **The Fix:** Whoever runs the code on a new machine *must* manually create a `.env.local` file inside the `apps/web` folder and paste in the correct Supabase URLs and the Gemini API key. Without this, the app will crash and the AI Dispute feature will instantly fail.
+
+### 2. The Local Database is Empty
+When you clone the repository on a new machine, you get the code, but the database itself is empty (it lives locally in a Docker container).
+* **The Fix:** Before starting the Next.js server on a new machine, you must run:
+  1. `npx supabase start` (to spin up the local database)
+  2. `npx prisma db push` (to create the tables in the database)
+  3. `npx tsx scripts/seed_demo_users.ts` (to populate the test accounts like the Plumber and Customer)
+
+### 3. Opening the Wrong Root Folder
+This is a monorepo structure. The core application lives inside the `apps/web` folder. If you open the top-level `modest-borg` folder in another IDE and try to run `npm run dev` in the terminal, it will crash because the `package.json` at the root does not have the Next.js startup scripts.
+* **The Fix:** Always ensure the IDE terminal has `cd apps/web` executed before running `npm run dev`.
+
+*Recommendation: Pack a USB stick containing your `.env.local` file on the day of your defense so you aren't scrambling for credentials!*

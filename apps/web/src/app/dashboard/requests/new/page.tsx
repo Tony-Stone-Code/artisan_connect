@@ -43,6 +43,29 @@ function RequestForm() {
     fetchArtisans();
   }, []);
 
+  // Hydrate draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const draft = localStorage.getItem('service_request_draft');
+      if (draft) {
+        const parsed = JSON.parse(draft);
+        if (!initialTitle && parsed.title) setTitle(parsed.title);
+        if (!initialDescription && parsed.description) setDescription(parsed.description);
+        if (!initialLocation && parsed.location) setLocation(parsed.location);
+      }
+    } catch (e) {
+      console.error('Failed to parse form draft', e);
+    }
+  }, [initialTitle, initialDescription, initialLocation]);
+
+  // Save draft to localStorage on change
+  useEffect(() => {
+    if (title || description || location) {
+      const draft = { title, description, location };
+      localStorage.setItem('service_request_draft', JSON.stringify(draft));
+    }
+  }, [title, description, location]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -63,6 +86,9 @@ function RequestForm() {
       });
 
       if (result.error) throw new Error(result.error);
+
+      // Clear draft on success
+      localStorage.removeItem('service_request_draft');
 
       router.push('/dashboard/requests');
     } catch (err: any) {

@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { getUsers } from '@/app/actions/admin';
+import { SearchInput } from './SearchInput';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminUsersPage() {
-  const users = await getUsers();
+export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+  const params = await searchParams;
+  const query = params.search || '';
+  const users = await getUsers(query);
 
   return (
     <div className="space-y-6">
@@ -23,11 +26,7 @@ export default async function AdminUsersPage() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>All Users ({users.length})</CardTitle>
-            <input 
-              type="text" 
-              placeholder="Search by name or email..." 
-              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-64 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
+            <SearchInput />
           </div>
         </CardHeader>
         <CardContent>

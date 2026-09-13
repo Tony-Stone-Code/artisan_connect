@@ -42,7 +42,7 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
     switch (status) {
       case 'PENDING': return 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20';
       case 'ACCEPTED': return 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20';
-      case 'IN_PROGRESS': return 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20';
+      case 'IN_PROGRESS': return 'bg-primary/10 text-primary hover:bg-primary/20';
       case 'COMPLETED': return 'bg-green-500/10 text-green-500 hover:bg-green-500/20';
       case 'CANCELLED': return 'bg-red-500/10 text-red-500 hover:bg-red-500/20';
       case 'DISPUTED': return 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/50';

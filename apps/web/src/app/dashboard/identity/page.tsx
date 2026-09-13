@@ -16,6 +16,7 @@ interface IdentityStatus {
 }
 
 export default function IdentityVerificationPage() {
+  const { user } = useAuth();
   const [identity, setIdentity] = useState<IdentityStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,6 +109,17 @@ export default function IdentityVerificationPage() {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-120px)]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (user?.user_metadata?.role !== 'ARTISAN') {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Identity Verification</h2>
+          <p className="text-muted-foreground">Only artisans need to verify their identity on this platform.</p>
+        </div>
       </div>
     );
   }

@@ -49,7 +49,7 @@ export async function getPlatformMetrics() {
   }
 }
 
-export async function getUsers() {
+export async function getUsers(searchQuery?: string) {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
 
@@ -63,7 +63,16 @@ export async function getUsers() {
   }
 
   try {
+    const whereClause = searchQuery ? {
+      OR: [
+        { first_name: { contains: searchQuery, mode: 'insensitive' as const } },
+        { last_name: { contains: searchQuery, mode: 'insensitive' as const } },
+        { email: { contains: searchQuery, mode: 'insensitive' as const } }
+      ]
+    } : {};
+
     const users = await prisma.user.findMany({
+      where: whereClause,
       orderBy: { created_at: 'desc' },
       select: {
         id: true,

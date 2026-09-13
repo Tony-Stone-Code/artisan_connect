@@ -84,7 +84,7 @@ export default function ArtisanMap({ artisans }: ArtisanMapProps) {
           // Add or update user marker
           if (!userMarkerRef.current) {
             const el = document.createElement('div');
-            el.className = 'relative w-4 h-4 bg-blue-500 border-2 border-white rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)] z-10';
+            el.className = 'relative w-4 h-4 bg-primary border-2 border-white rounded-full shadow-md z-10';
             
             // Add a pulsing animation ring
             const pulseRing = document.createElement('div');

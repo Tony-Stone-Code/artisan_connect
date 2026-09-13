@@ -11,7 +11,13 @@ export async function getRequests() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  const role = user.user_metadata?.role
+  const dbUser = await prisma.user.findUnique({
+    where: { supabase_uid: user.id },
+    select: { role: true }
+  })
+  if (!dbUser) return { error: 'Unauthorized' }
+
+  const role = dbUser.role;
 
   if (role === 'CUSTOMER') {
     const customer = await prisma.customerProfile.findFirst({
@@ -22,7 +28,10 @@ export async function getRequests() {
 
     const requests = await prisma.serviceRequest.findMany({
       where: { customer_id: customer.id },
-      include: { artisan: { include: { user: true } } },
+      include: { 
+        artisan: { include: { user: true } },
+        quotes: { orderBy: { created_at: 'desc' } }
+      },
       orderBy: { created_at: 'desc' }
     })
     return { requests }
@@ -35,7 +44,10 @@ export async function getRequests() {
 
     const requests = await prisma.serviceRequest.findMany({
       where: { artisan_id: artisan.id },
-      include: { customer: { include: { user: true } } },
+      include: { 
+        customer: { include: { user: true } },
+        quotes: { orderBy: { created_at: 'desc' } }
+      },
       orderBy: { created_at: 'desc' }
     })
     return { requests }
