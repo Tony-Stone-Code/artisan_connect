@@ -32,7 +32,7 @@ export async function sendCustomerWelcomeEmail(to: string, firstName: string) {
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #2563eb;">Welcome to ArtisanConnect, ${firstName}! 🎉</h2>
+      <h2 style="color: #2563eb;">Welcome to ArtisanConnect, ${firstName}!</h2>
       <p>We are thrilled to have you on board. Finding trusted, verified artisans in Ghana has never been easier.</p>
       <p>Whether you need a quick plumbing fix, some electrical work, or a major carpentry project, our professionals are ready to help.</p>
       <a href="http://localhost:3000/artisans" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 10px;">Find an Artisan</a>
@@ -67,10 +67,10 @@ export async function sendArtisanWelcomeEmail(to: string, firstName: string) {
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #2563eb;">Welcome to ArtisanConnect, ${firstName}! 🛠️</h2>
+      <h2 style="color: #2563eb;">Welcome to ArtisanConnect, ${firstName}!</h2>
       <p>Thank you for joining our platform. You're one step away from connecting with customers who need your skills.</p>
       <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
-        <h3 style="margin-top: 0; color: #991b1b;">⚠️ Action Required: Verify Your Identity</h3>
+        <h3 style="margin-top: 0; color: #991b1b;">Action Required: Verify Your Identity</h3>
         <p style="color: #7f1d1d; margin-bottom: 0;">To appear in customer search results and receive jobs, you must verify your identity. Please log in to your dashboard and upload your Ghana Card and a selfie.</p>
       </div>
       <a href="http://localhost:3000/dashboard/profile" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Verify Identity Now</a>
@@ -104,7 +104,7 @@ export async function sendNewRequestEmail(to: string, artisanName: string, custo
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #2563eb;">New Service Request! 🚀</h2>
+      <h2 style="color: #2563eb;">New Service Request</h2>
       <p>Hi ${artisanName},</p>
       <p>You have received a new service request from <strong>${customerName}</strong>.</p>
       <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
@@ -140,7 +140,7 @@ export async function sendStatusUpdateEmail(to: string, customerName: string, ar
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #2563eb;">Job Status Update 🔔</h2>
+      <h2 style="color: #2563eb;">Job Status Update</h2>
       <p>Hi ${customerName},</p>
       <p><strong>${artisanName}</strong> has updated the status of your service request.</p>
       <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">

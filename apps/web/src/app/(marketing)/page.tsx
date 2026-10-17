@@ -2,186 +2,274 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { 
+  ShieldCheck, 
+  Lock, 
+  Star, 
+  ArrowRight, 
+  CheckCircle2, 
+  Wrench, 
+  Sparkles, 
+  Hammer, 
+  Car, 
+  HardHat, 
+  Paintbrush,
+  ChevronRight,
+  Award
+} from 'lucide-react';
+import { HeroSearchForm } from '@/components/home/HeroSearchForm';
+import { InteractiveHeroShowcase } from '@/components/home/InteractiveHeroShowcase';
+import { InteractiveEscrowFlow } from '@/components/home/InteractiveEscrowFlow';
+import { TradeEstimatorWidget } from '@/components/home/TradeEstimatorWidget';
+
+const FEATURED_TRADES = [
+  {
+    title: 'Plumbing Solutions',
+    query: 'Plumbing',
+    image: '/images/artisan_plumber_1782323020851.png',
+    icon: Wrench,
+    tasks: 'Pipe leaks, water tanks, booster pumps & bathroom fixtures',
+    price: 'From GHS 120',
+  },
+  {
+    title: 'Electrical & Solar',
+    query: 'Electrical',
+    image: '/images/artisan_electrician_ghana.jpg',
+    icon: Sparkles,
+    tasks: 'Breaker panels, building wiring, hybrid inverters & lighting',
+    price: 'From GHS 200',
+  },
+  {
+    title: 'Auto Mechanics',
+    query: 'Auto Mechanics',
+    image: '/images/artisan_mechanic_ghana.jpg',
+    icon: Car,
+    tasks: 'OBD diagnostics, brake overhaul, engine care & suspension',
+    price: 'From GHS 150',
+  },
+  {
+    title: 'Custom Carpentry',
+    query: 'Carpentry',
+    image: '/images/artisan_carpenter_1782323041206.png',
+    icon: Hammer,
+    tasks: 'Hardwood doors, custom kitchen cabinets, roof trusses & repair',
+    price: 'From GHS 250',
+  },
+  {
+    title: 'Masonry & Tiling',
+    query: 'Masonry',
+    image: '/images/artisan_mason_ghana.jpg',
+    icon: HardHat,
+    tasks: 'Floor porcelain tiling, compound paving & structural plastering',
+    price: 'From GHS 250',
+  },
+  {
+    title: 'Painting & Surface',
+    query: 'Painting',
+    image: '/images/ghana_artisan_hero_bg.jpg',
+    icon: Paintbrush,
+    tasks: 'Weather-shield exterior, interior silk coats & anti-damp sealing',
+    price: 'From GHS 180',
+  },
+];
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center">
-      {/* Hero Section */}
-      <section className="w-full py-12 md:py-16 lg:py-20 bg-background relative overflow-hidden border-b">
+    <div className="flex flex-col items-center overflow-hidden">
+      
+      {/* Dynamic Animated Hero Section */}
+      <section className="w-full relative min-h-[640px] lg:min-h-[720px] bg-background border-b border-border flex items-center justify-center overflow-hidden py-14 lg:py-20">
+        {/* Subtle Ambient Background Texture */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute -top-32 -left-32 w-[520px] h-[520px] bg-primary/10 rounded-full blur-3xl animate-float-slow" />
+          <div className="absolute top-1/2 -right-32 w-[480px] h-[480px] bg-accent/10 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px] [mask-image:radial-gradient(ellipse_70%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        </div>
+
         <div className="container px-4 md:px-6 mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="flex flex-col items-start space-y-6 text-left">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-5xl/none">
-                Access Verified <span className="text-primary">Professional</span> Tradespeople
-              </h1>
-              <p className="max-w-[600px] text-muted-foreground md:text-lg leading-relaxed">
-                A standardized infrastructure connecting skilled tradespeople with verifiable service requirements. Facilitating plumbing, electrical, and carpentry operations.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <Link href="/register" className="w-full sm:w-auto">
-                  <Button className="w-full h-12 px-8 rounded-none">
-                    Engage Services
-                  </Button>
-                </Link>
-                <Link href="/artisans" className="w-full sm:w-auto">
-                  <Button variant="outline" className="w-full h-12 px-8 rounded-none">
-                    View Service Directory
-                  </Button>
-                </Link>
-              </div>
-            </div>
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
-            {/* Rigid Image Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 h-[400px] mt-8 md:mt-0 w-full max-w-sm mx-auto md:max-w-none">
-              <div className="relative sm:row-span-2 bg-muted border border-border">
-                <Image 
-                  src="https://upload.wikimedia.org/wikipedia/commons/0/05/Electrician_01.jpg" 
-                  alt="Professional Electrician" 
-                  fill 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                />
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 flex flex-col items-start space-y-6 text-left animate-fade-in-up">
+              
+              {/* Trust Badge Pill */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-primary/10 border border-primary/25 text-primary text-xs font-bold uppercase tracking-wider shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                <span>Ghana&apos;s Verified Artisan Network</span>
               </div>
-              <div className="relative bg-muted border border-border">
-                <Image 
-                  src="https://upload.wikimedia.org/wikipedia/commons/5/58/Plumber_01.jpg" 
-                  alt="Professional Plumber" 
-                  fill 
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                />
+
+              {/* Main Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.08]">
+                Hire Trusted <span className="text-primary">Artisans</span> in Ghana With Zero Risk.
+              </h1>
+
+              {/* Supporting Copy */}
+              <p className="max-w-[600px] text-base md:text-lg text-muted-foreground leading-relaxed">
+                Connect with verified plumbers, electricians, carpenters, and auto mechanics across Accra. Your payment stays safely in escrow until the job is inspected and approved.
+              </p>
+
+              {/* Working Search Form with Dynamic Placeholders */}
+              <HeroSearchForm />
+
+              {/* Guarantees Strip */}
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/70 w-full max-w-lg text-xs">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
+                  <span className="font-semibold text-foreground">Ghana Card Verified</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-accent shrink-0" />
+                  <span className="font-semibold text-foreground">Escrow Safe</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="font-semibold text-foreground">Direct MoMo Pay</span>
+                </div>
               </div>
-              <div className="relative bg-muted border border-border hidden sm:block">
-                <Image 
-                  src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Carpenter_Ghana.jpg" 
-                  alt="Professional Carpenter" 
-                  fill 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
+
+            </div>
+
+            {/* Right Interactive Artisan Showcase Column */}
+            <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+              <InteractiveHeroShowcase />
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Live Impact Ticker Strip */}
+      <section className="w-full bg-muted/40 py-8 border-b border-border">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-primary">4,800+</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Completed Jobs</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">GHS 0</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Customer Fraud Loss</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-accent">100%</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Ghana Card Verified</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">4.9 / 5.0</p>
+              <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Average Rating</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Escrow Security Feature Section */}
-      <section className="w-full py-12 md:py-16 bg-muted">
+      <section className="w-full py-16 lg:py-20 bg-background border-b border-border">
         <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="order-2 lg:order-1">
-              <Card className="border-border shadow-none rounded-none bg-card overflow-hidden border-2">
-                <CardContent className="p-0">
-                  <div className="flex items-center gap-4 p-6 border-b bg-muted/50">
-                    <div className="bg-primary/10 p-2 rounded-sm text-primary">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                    </div>
-                    <h3 className="text-xl font-bold">Escrow Protection Protocol</h3>
-                  </div>
-                  
-                  <div className="divide-y border-t-0">
-                    <div className="flex gap-4 p-6">
-                      <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 bg-primary/20 text-primary font-bold text-sm rounded-sm">1</div>
-                      <div>
-                        <h4 className="font-semibold text-base">Allocate Capital</h4>
-                        <p className="text-muted-foreground text-sm mt-1">Capital is secured in a centralized vault to guarantee liquidity prior to work commencement.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-4 p-6">
-                      <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 bg-primary/20 text-primary font-bold text-sm rounded-sm">2</div>
-                      <div>
-                        <h4 className="font-semibold text-base">Service Execution</h4>
-                        <p className="text-muted-foreground text-sm mt-1">The engaged professional executes the specified requirements.</p>
-                      </div>
-                    </div>
+          <InteractiveEscrowFlow />
+        </div>
+      </section>
 
-                    <div className="flex gap-4 p-6 bg-primary/5">
-                      <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground font-bold text-sm rounded-sm">3</div>
-                      <div>
-                        <h4 className="font-semibold text-base text-primary">Disburse Capital</h4>
-                        <p className="text-muted-foreground text-sm mt-1">Capital disbursement is contingent upon formal completion approval.</p>
+      {/* Instant Cost & Artisan Estimator */}
+      <section className="w-full py-16 lg:py-20 bg-muted/30 border-b border-border">
+        <div className="container px-4 md:px-6 mx-auto">
+          <TradeEstimatorWidget />
+        </div>
+      </section>
+
+      {/* Popular Trades Visual Grid */}
+      <section className="w-full py-16 lg:py-20 bg-background border-b border-border">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/25 text-primary text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                Featured Categories
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+                Qualified Skilled Trades
+              </h2>
+            </div>
+            <Link href="/artisans">
+              <Button variant="outline" className="rounded-none font-bold uppercase tracking-wider text-xs cursor-pointer">
+                Explore All Trades <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURED_TRADES.map((trade) => {
+              const Icon = trade.icon;
+              return (
+                <Link 
+                  key={trade.title}
+                  href={`/artisans?q=${encodeURIComponent(trade.query)}`}
+                  className="group block"
+                >
+                  <Card className="rounded-none border border-border/70 overflow-hidden bg-card hover:border-primary/60 transition-all duration-300 hover:shadow-lg card-hover-lift flex flex-col h-full">
+                    <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+                      <Image
+                        src={trade.image}
+                        alt={trade.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute bottom-3 left-3 text-white flex items-center gap-2 text-xs font-bold">
+                        <Icon className="w-4 h-4 text-accent" />
+                        <span>{trade.title}</span>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="order-1 lg:order-2 space-y-6">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Integrated Transaction Security</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                ArtisanConnect employs a standardized Escrow System to ensure capital is secured prior to commencement and disbursed strictly upon verified completion.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                  <span>Deferred Direct Compensation</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                  <span>Structured Dispute Resolution</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                  <span>Capital Protection Guarantee</span>
-                </li>
-              </ul>
-            </div>
+                    <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {trade.tasks}
+                      </p>
+                      <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                        <span className="font-bold text-foreground">{trade.price}</span>
+                        <span className="text-primary font-bold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                          View Artisans <ChevronRight className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Trust Badges Section */}
-      <section className="w-full py-12 md:py-16">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid md:grid-cols-3 border-2 border-border bg-card">
-            <div className="flex flex-col items-center space-y-4 text-center p-8 border-b md:border-b-0 md:border-r border-border">
-              <div className="flex h-12 w-12 items-center justify-center bg-muted border border-border">
-                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold uppercase tracking-wider">Verified Identity</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">Identity verification via the National Identification Authority is mandatory prior to platform access.</p>
-            </div>
-            
-            <div className="flex flex-col items-center space-y-4 text-center p-8 border-b md:border-b-0 md:border-r border-border">
-              <div className="flex h-12 w-12 items-center justify-center bg-muted border border-border">
-                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold uppercase tracking-wider">Community Reviews</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">Aggregated performance metrics and post-service evaluations inform engagement decisions.</p>
-            </div>
-
-            <div className="flex flex-col items-center space-y-4 text-center p-8">
-              <div className="flex h-12 w-12 items-center justify-center bg-muted border border-border">
-                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold uppercase tracking-wider">Fast Response</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">Automated routing alerts available professionals in the designated geographic perimeter to optimize response times.</p>
-            </div>
+      {/* Call to Action Section */}
+      <section className="w-full py-16 lg:py-20 bg-muted/50 border-b border-border relative overflow-hidden">
+        <div className="container px-4 md:px-6 mx-auto relative z-10 text-center max-w-3xl space-y-5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/25 text-primary text-xs font-bold uppercase tracking-wider">
+            <Award className="w-3.5 h-3.5" />
+            Standardizing Trade Quality in Ghana
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+            Ready to Get Quality Work Done?
+          </h2>
+          <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Join thousands of homeowners and businesses across Ghana who hire skilled artisans with complete escrow confidence.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <Link href="/artisans" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto px-8 h-12 rounded-none font-bold uppercase tracking-wider text-xs shadow-lg cursor-pointer">
+                Find Verified Artisans
+              </Button>
+            </Link>
+            <Link href="/register" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 h-12 rounded-none font-bold uppercase tracking-wider text-xs cursor-pointer">
+                Register as an Artisan
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
-      
-      {/* CTA Section */}
-      <section className="w-full py-16 bg-primary text-primary-foreground">
-        <div className="container px-4 md:px-6 mx-auto text-center border-y border-primary-foreground/20 py-8">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl mb-4">Initiate Service Request</h2>
-          <p className="max-w-[600px] mx-auto text-primary-foreground/80 mb-8">Register to access the secure marketplace of verified professionals.</p>
-          <Link href="/register">
-            <Button variant="secondary" className="h-12 px-10 rounded-none font-bold uppercase tracking-wider">
-              Register Account
-            </Button>
-          </Link>
-        </div>
-      </section>
+
     </div>
   );
 }

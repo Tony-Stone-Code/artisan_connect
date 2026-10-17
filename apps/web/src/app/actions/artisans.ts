@@ -90,6 +90,14 @@ If the query is just a specific business name or person's name, return an empty 
             avatar_url: true,
           }
         },
+        portfolio: {
+          select: {
+            id: true,
+            title: true,
+            image_url: true,
+          },
+          take: 3,
+        },
         services: {
           select: {
             id: true,
@@ -121,6 +129,7 @@ If the query is just a specific business name or person's name, return an empty 
     return artisans.map((artisan: any) => ({
       ...artisan,
       average_rating: artisan.average_rating ? Number(artisan.average_rating) : 0,
+      portfolio: artisan.portfolio || [],
       services: artisan.services?.map((s: any) => ({
         ...s,
         price_min: s.price_min ? Number(s.price_min) : null,
@@ -156,40 +165,65 @@ export async function getArtisanById(id: string) {
 
     if (!artisanScalar) return null;
 
-    const user = await prisma.user.findUnique({
-      where: { id: artisanScalar.user_id },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        avatar_url: true,
-        created_at: true,
-      }
-    });
-
-    const services = await prisma.artisanService.findMany({
-      where: { artisan_id: id },
-      select: {
-        id: true,
-        description: true,
-        price_min: true,
-        price_max: true,
-        subcategory: {
-          select: {
-            id: true,
-            name: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
+    // Parallelize child queries to eliminate sequential DB waterfalls
+    const [user, services, portfolio, reviews] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: artisanScalar.user_id },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          avatar_url: true,
+          created_at: true,
+        }
+      }),
+      prisma.artisanService.findMany({
+        where: { artisan_id: id },
+        select: {
+          id: true,
+          description: true,
+          price_min: true,
+          price_max: true,
+          subcategory: {
+            select: {
+              id: true,
+              name: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                }
               }
             }
           }
         }
-      }
-    });
+      }),
+      prisma.portfolioItem.findMany({
+        where: { artisan_id: id },
+        orderBy: { created_at: 'desc' },
+        take: 12,
+      }),
+      prisma.review.findMany({
+        where: { artisan_id: id },
+        include: {
+          customer: {
+            include: {
+              user: {
+                select: {
+                  first_name: true,
+                  last_name: true,
+                  avatar_url: true,
+                }
+              }
+            }
+          }
+        },
+        orderBy: { created_at: 'desc' },
+        take: 10,
+      }),
+    ]);
 
-    const artisanBase = {
+    return {
       ...artisanScalar,
       average_rating: artisanScalar.average_rating ? Number(artisanScalar.average_rating) : 0,
       user,
@@ -198,36 +232,8 @@ export async function getArtisanById(id: string) {
         price_min: s.price_min ? Number(s.price_min) : null,
         price_max: s.price_max ? Number(s.price_max) : null,
       })),
-    };
-
-    const portfolio = await prisma.portfolioItem.findMany({
-      where: { artisan_id: id },
-      orderBy: { created_at: 'desc' }
-    });
-
-    const reviews = await prisma.review.findMany({
-      where: { artisan_id: id },
-      include: {
-        customer: {
-          include: {
-            user: {
-              select: {
-                first_name: true,
-                last_name: true,
-                avatar_url: true,
-              }
-            }
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' },
-      take: 10,
-    });
-
-    return {
-      ...artisanBase,
       portfolio,
-      reviews
+      reviews,
     };
   } catch (error) {
     console.error(`Failed to fetch artisan with ID ${id}:`, error);

@@ -1,3 +1,5 @@
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getArtisanById } from '@/app/actions/artisans';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { MapPin, Star, ShieldCheck, Briefcase, Calendar, MessageSquare, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ReportButton } from '@/components/ui/ReportButton';
-import ProfileLocationMap from '@/components/map/ProfileLocationMap';
+import { getTradeMedia } from '@/lib/tradeMedia';
+
+// Lazy load Mapbox to eliminate ~800KB bundle overhead
+const ProfileLocationMap = dynamic(() => import('@/components/map/ProfileLocationMap'), {
+  loading: () => (
+    <div className="h-64 w-full bg-muted/40 border border-border animate-pulse flex items-center justify-center text-sm text-muted-foreground">
+      Loading location map...
+    </div>
+  ),
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,18 +40,28 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
   }
 
   const displayName = artisan.business_name || `${artisan.user.first_name} ${artisan.user.last_name}`;
-  const initials = artisan.business_name 
-    ? artisan.business_name.substring(0, 2).toUpperCase()
-    : `${artisan.user.first_name[0]}${artisan.user.last_name[0]}`;
+  const primaryService = artisan.services?.[0]?.subcategory?.category?.name || 'General Trades';
+  const media = getTradeMedia(primaryService);
+  const avatarSrc = artisan.user.avatar_url || media.avatarUrl;
+  const coverSrc = media.coverUrl;
 
   return (
     <div className="min-h-screen bg-muted/20 pb-24">
-      {/* Cover Banner */}
-      <div className="h-48 md:h-64 lg:h-80 w-full bg-gradient-to-r from-primary/20 via-primary/10 to-background relative border-b">
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-        <div className="container mx-auto px-4 h-full relative">
-          <Link href="/artisans" className="absolute top-6 left-4 md:left-6 inline-flex items-center text-sm font-medium text-foreground hover:text-primary transition-colors bg-background/50 backdrop-blur px-3 py-1.5 rounded-full shadow-sm">
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Directory
+      {/* Cover Banner with Real Workspace Photo */}
+      <div className="h-56 md:h-72 lg:h-80 w-full relative overflow-hidden bg-muted border-b">
+        <Image
+          src={coverSrc}
+          alt={`${displayName} workspace`}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-black/30" />
+        
+        <div className="container mx-auto px-4 h-full relative z-10 flex items-start pt-6">
+          <Link href="/artisans" className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-white bg-black/60 hover:bg-black/80 backdrop-blur px-4 py-2 border border-white/20 transition-all shadow-md">
+            <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> Back to Directory
           </Link>
         </div>
       </div>
@@ -50,23 +71,22 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
           
           {/* Left Column: Core Identity & Sticky Actions */}
           <div className="space-y-6">
-            <Card className="border-border/50 shadow-lg">
+            <Card className="border-border/70 shadow-xl rounded-none bg-card">
               <CardContent className="p-6 md:p-8 flex flex-col items-center text-center">
                 <div className="relative mb-6">
-                  {artisan.user.avatar_url ? (
-                    <img 
-                      src={artisan.user.avatar_url} 
+                  <div className="relative w-32 h-32 md:w-36 md:h-36 rounded-none border-4 border-card bg-muted shadow-xl overflow-hidden">
+                    <Image 
+                      src={avatarSrc} 
                       alt={displayName} 
-                      className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-card object-cover bg-muted shadow-md"
+                      fill
+                      sizes="150px"
+                      priority
+                      className="object-cover object-top"
                     />
-                  ) : (
-                    <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-card bg-primary text-primary-foreground flex items-center justify-center text-4xl font-bold shadow-md">
-                      {initials}
-                    </div>
-                  )}
+                  </div>
                   {artisan.is_verified && (
-                    <div className="absolute bottom-2 right-2 bg-background text-primary p-1.5 rounded-full shadow-md border" title="Verified Artisan">
-                      <ShieldCheck className="w-6 h-6" />
+                    <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-1.5 shadow-md border-2 border-card" title="Verified Artisan">
+                      <ShieldCheck className="w-5 h-5" />
                     </div>
                   )}
                 </div>
@@ -216,12 +236,14 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
                     {artisan.portfolio.map((item: any) => (
                       <div key={item.id} className="aspect-square relative group bg-muted overflow-hidden">
-                        <img 
+                        <Image 
                           src={item.image_url} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          alt={item.title || 'Portfolio work'} 
+                          fill
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 z-10">
                           <p className="text-white font-medium text-sm truncate">{item.title}</p>
                         </div>
                       </div>
@@ -244,7 +266,15 @@ export default async function ArtisanPublicProfile({ params }: { params: Promise
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-3">
                             {review.customer.user.avatar_url ? (
-                              <img src={review.customer.user.avatar_url} className="w-10 h-10 rounded-full object-cover bg-muted" alt="" />
+                              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted">
+                                <Image 
+                                  src={review.customer.user.avatar_url} 
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover" 
+                                  alt="" 
+                                />
+                              </div>
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
                                 {review.customer.user.first_name[0]}

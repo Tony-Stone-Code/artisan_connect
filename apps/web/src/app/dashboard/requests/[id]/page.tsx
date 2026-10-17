@@ -22,9 +22,11 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
     redirect('/auth/login');
   }
 
-  // Fetch data
-  const { request, error: reqError } = await getRequestById(id);
-  const { messages, error: msgError } = await getMessages(id);
+  // Fetch data in parallel
+  const [{ request, error: reqError }, { messages, error: msgError }] = await Promise.all([
+    getRequestById(id),
+    getMessages(id),
+  ]);
 
   if (reqError || !request) {
     return (

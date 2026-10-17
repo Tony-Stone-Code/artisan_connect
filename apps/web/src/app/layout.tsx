@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { CookieConsent } from '@/components/ui/CookieConsent';
 import "./globals.css";
 
 const inter = Inter({
@@ -15,11 +16,15 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://artisan-connect.netlify.app'),
   title: {
     template: '%s | ArtisanConnect',
     default: 'ArtisanConnect - Find Trusted Professionals in Ghana',
   },
   description: 'The easiest way to find and hire verified plumbers, electricians, carpenters, and other skilled professionals across Ghana.',
+  keywords: ['artisan', 'professional services', 'Ghana', 'plumber', 'electrician', 'carpenter', 'hire', 'escrow', 'trusted'],
+  authors: [{ name: 'GammaCube' }],
+  creator: 'GammaCube',
   openGraph: {
     title: 'ArtisanConnect - Find Trusted Professionals',
     description: 'The easiest way to find and hire verified plumbers, electricians, carpenters, and other skilled professionals across Ghana.',
@@ -27,10 +32,10 @@ export const metadata: Metadata = {
     siteName: 'ArtisanConnect',
     images: [
       {
-        url: '/images/about_hero_1782323590841.png', // We will use one of our images as the OG image
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'ArtisanConnect Preview',
+        alt: 'ArtisanConnect - Find Trusted Professionals in Ghana',
       },
     ],
     locale: 'en_GH',
@@ -40,7 +45,19 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'ArtisanConnect - Find Trusted Professionals',
     description: 'Find and hire verified plumbers, electricians, carpenters across Ghana.',
-    images: ['/images/about_hero_1782323590841.png'],
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: [
+      { url: '/icon.png', sizes: '256x256', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -60,6 +77,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
           </AuthProvider>
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>

@@ -96,11 +96,59 @@ export default function MarketingLayout({
         </div>
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t py-6 md:py-0 pb-24 md:pb-0">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row px-4 md:px-6">
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            This project is built by <a href="https://gammacube.vercel.app" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4 hover:text-primary transition-colors">GammaCube</a>.
-          </p>
+      <footer className="border-t py-10 md:py-12 pb-28 md:pb-12 bg-muted/30">
+        <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">A</div>
+                <span className="font-bold text-lg tracking-tight">Artisan<span className="text-primary">Connect</span></span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Ghana&apos;s trusted marketplace for verified skilled professionals.
+              </p>
+            </div>
+
+            {/* Platform */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider">Platform</h4>
+              <ul className="space-y-2 text-xs text-muted-foreground">
+                <li><Link href="/services" className="hover:text-primary transition-colors">Services</Link></li>
+                <li><Link href="/artisans" className="hover:text-primary transition-colors">Find Artisans</Link></li>
+                <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              </ul>
+            </div>
+
+            {/* Account */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider">Account</h4>
+              <ul className="space-y-2 text-xs text-muted-foreground">
+                <li><Link href="/register" className="hover:text-primary transition-colors">Get Started</Link></li>
+                <li><Link href="/login" className="hover:text-primary transition-colors">Sign In</Link></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider">Legal</h4>
+              <ul className="space-y-2 text-xs text-muted-foreground">
+                <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/cookies" className="hover:text-primary transition-colors">Cookie Policy</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-10 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground">
+              &copy; {new Date().getFullYear()} ArtisanConnect. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Built by <a href="https://gammacube.vercel.app" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4 hover:text-primary transition-colors">GammaCube</a>
+            </p>
+          </div>
         </div>
       </footer>
 
