@@ -131,6 +131,7 @@ model ArtisanProfile {
   favorites_by       FavoriteArtisan[]
 
   @@index([user_id])
+  @@index([is_available, is_verified, average_rating(sort: Desc)], map: "idx_artisan_discovery")
 }
 
 model AdminProfile {
@@ -243,6 +244,9 @@ model ServiceRequest {
 
   @@index([customer_id])
   @@index([artisan_id])
+  @@index([customer_id, created_at(sort: Desc)], map: "idx_servicerequest_customer_created")
+  @@index([artisan_id, status], map: "idx_servicerequest_artisan_status")
+  @@index([status, created_at(sort: Desc)], map: "idx_servicerequest_status_created")
 }
 
 model Quote {
@@ -262,6 +266,8 @@ model Quote {
 
   @@index([request_id])
   @@index([artisan_id])
+  @@index([request_id, status], map: "idx_quote_request_status")
+  @@index([artisan_id, created_at(sort: Desc)], map: "idx_quote_artisan_created")
 }
 
 model EscrowPayment {
@@ -294,6 +300,7 @@ model Review {
   @@index([request_id])
   @@index([customer_id])
   @@index([artisan_id])
+  @@index([artisan_id, rating], map: "idx_review_artisan_rating")
 }
 
 model Message {
@@ -307,6 +314,7 @@ model Message {
 
   @@index([request_id])
   @@index([sender_id])
+  @@index([request_id, created_at(sort: Asc)], map: "idx_message_request_created")
 }
 
 model FavoriteArtisan {
@@ -339,6 +347,7 @@ model Report {
   @@index([reporter_id])
   @@index([target_id, target_type])
   @@index([assigned_to])
+  @@index([status, created_at(sort: Desc)], map: "idx_report_status_created")
 }
 
 model AuditLog {
@@ -354,6 +363,7 @@ model AuditLog {
 
   @@index([admin_id])
   @@index([target_id, target_type])
+  @@index([created_at(sort: Desc)], map: "idx_auditlog_created")
 }
 
 model Notification {
@@ -368,6 +378,7 @@ model Notification {
   created_at  DateTime       @default(now())
 
   @@index([user_id])
+  @@index([user_id, is_read, created_at(sort: Desc)], map: "idx_notification_user_unread")
 }
 
 model AiInteraction {

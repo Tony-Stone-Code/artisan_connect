@@ -22,6 +22,7 @@ const pool = new Pool({
   max: isProduction ? 15 : 5, // Connection pool limit
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
+  statement_timeout: 20000, // 20s max query timeout to prevent orphaned locks
 });
 
 const adapter = new PrismaPg(pool);
