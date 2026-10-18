@@ -30,6 +30,7 @@ export async function getRequests() {
       where: { customer_id: customer.id },
       include: { 
         artisan: { include: { user: true } },
+        customer: { include: { user: true } },
         quotes: { orderBy: { created_at: 'desc' } }
       },
       orderBy: { created_at: 'desc' }
@@ -45,6 +46,7 @@ export async function getRequests() {
     const requests = await prisma.serviceRequest.findMany({
       where: { artisan_id: artisan.id },
       include: { 
+        artisan: { include: { user: true } },
         customer: { include: { user: true } },
         quotes: { orderBy: { created_at: 'desc' } }
       },

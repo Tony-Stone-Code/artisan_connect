@@ -1,41 +1,77 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
-  })
+  });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return supabaseResponse;
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  )
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        supabaseResponse = NextResponse.next({
+          request,
+        });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with cross-site request forgery attacks.
+  // IMPORTANT: Avoid calling auth.getUser() between client creation and session refresh.
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
-  // Custom route protection logic can go here later!
-  // e.g. Redirecting to /login if !user && request.nextUrl.pathname.startsWith('/dashboard')
+  const pathname = request.nextUrl.pathname;
 
-  return supabaseResponse
+  // 1. Protected routes: /dashboard and /admin require authenticated session
+  const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isAdminRoute = pathname.startsWith('/admin');
+
+  if (!user && (isDashboardRoute || isAdminRoute)) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/login';
+    redirectUrl.searchParams.set('redirect', pathname);
+    const response = NextResponse.redirect(redirectUrl);
+    // Copy updated cookies to redirect response
+    request.cookies.getAll().forEach((c) => response.cookies.set(c.name, c.value));
+    return response;
+  }
+
+  // 2. Admin routes require ADMIN or SUPERADMIN role
+  if (user && isAdminRoute) {
+    const userRole = user.user_metadata?.role;
+    if (userRole !== 'ADMIN' && userRole !== 'SUPERADMIN') {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = '/dashboard';
+      const response = NextResponse.redirect(redirectUrl);
+      request.cookies.getAll().forEach((c) => response.cookies.set(c.name, c.value));
+      return response;
+    }
+  }
+
+  // 3. Auth routes (/login, /register): if already signed in, redirect to dashboard
+  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  if (user && isAuthRoute) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/dashboard';
+    const response = NextResponse.redirect(redirectUrl);
+    request.cookies.getAll().forEach((c) => response.cookies.set(c.name, c.value));
+    return response;
+  }
+
+  return supabaseResponse;
 }

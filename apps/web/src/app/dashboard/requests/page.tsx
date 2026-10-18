@@ -17,24 +17,28 @@ import {
   Loader2
 } from 'lucide-react';
 
-interface Request {
+interface RequestItem {
   id: string;
   title: string;
   description: string;
   status: string;
-  created_at: string;
-  artisan: {
-    first_name: string;
-    last_name: string;
-  };
-  customer: {
-    first_name: string;
-    last_name: string;
-  };
+  created_at: string | Date;
+  artisan?: {
+    user?: {
+      first_name?: string;
+      last_name?: string;
+    };
+  } | null;
+  customer?: {
+    user?: {
+      first_name?: string;
+      last_name?: string;
+    };
+  } | null;
 }
 
 export default function RequestsPage() {
-  const [requests, setRequests] = useState<Request[]>([]);
+  const [requests, setRequests] = useState<RequestItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -145,7 +149,7 @@ export default function RequestsPage() {
                     <div className="text-[11px] text-muted-foreground pt-1 flex items-center gap-2">
                       <span>Submitted: {new Date(req.created_at).toLocaleDateString()}</span>
                       <span>·</span>
-                      <span>Artisan: <strong>{req.artisan.first_name} {req.artisan.last_name}</strong></span>
+                      <span>Participant: <strong>{req.artisan?.user ? `${req.artisan.user.first_name} ${req.artisan.user.last_name}` : req.customer?.user ? `${req.customer.user.first_name} ${req.customer.user.last_name}` : 'Assigned Artisan'}</strong></span>
                     </div>
                   </div>
 

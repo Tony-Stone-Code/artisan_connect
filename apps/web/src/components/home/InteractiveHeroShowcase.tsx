@@ -146,7 +146,9 @@ export function InteractiveHeroShowcase() {
                 <h4 className="font-bold text-sm text-foreground truncate">
                   {activeArtisan.name}
                 </h4>
-                <ShieldCheck className="w-4 h-4 text-primary shrink-0" title="Ghana Card Verified" />
+                <span title="Ghana Card Verified" className="inline-flex">
+                  <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
+                </span>
               </div>
               <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
                 {activeArtisan.status}
