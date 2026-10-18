@@ -1,123 +1,347 @@
 'use client';
 
-import { useAuth } from '@/components/providers/AuthProvider';
-import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { 
+  Briefcase, 
+  Clock, 
+  CheckCircle2, 
+  Wallet, 
+  ShieldCheck, 
+  AlertCircle, 
+  ArrowRight, 
+  Search, 
+  PlusCircle, 
+  FileText, 
+  Wrench, 
+  ChevronRight,
+  ExternalLink,
+  Loader2
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { getDashboardOverview, type DashboardData } from '@/app/actions/dashboard';
 
 export default function DashboardOverview() {
-  const { user } = useAuth();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const firstName = user?.user_metadata?.first_name || 'there';
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await getDashboardOverview();
+        if (res.data) {
+          setData(res.data);
+        }
+      } catch (e) {
+        console.error('Failed to load dashboard:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">
+          Loading your dashboard...
+        </p>
+      </div>
+    );
+  }
+
+  const isArtisan = data?.role === 'ARTISAN';
+  const user = data?.user;
+  const stats = data?.stats;
+  const recent = data?.recentRequests || [];
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">Pending Quote</span>;
+      case 'QUOTED':
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Quote Sent</span>;
+      case 'IN_PROGRESS':
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">In Progress</span>;
+      case 'COMPLETED':
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Completed</span>;
+      case 'DISPUTED':
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-destructive/10 text-destructive border border-destructive/20">Under Dispute</span>;
+      default:
+        return <span className="px-2 py-0.5 text-[11px] font-bold bg-muted text-muted-foreground border border-border">{status}</span>;
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-primary/5 p-6 rounded-2xl border border-primary/10">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Welcome back, {firstName}!</h2>
-          <p className="text-muted-foreground mt-2 text-lg">Here is what is happening with your account today.</p>
+      
+      {/* Welcome & Role Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-card border border-border/70 shadow-sm">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              Welcome back, {user?.name || 'there'}!
+            </h1>
+            <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/25">
+              {isArtisan ? 'Artisan Professional' : 'Customer Account'}
+            </span>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            {isArtisan 
+              ? 'Manage your job requests, submitted quotes, and escrow earnings across Ghana.'
+              : 'Hire verified artisans, track active projects, and inspect completed jobs with escrow safety.'
+            }
+          </p>
         </div>
-        <div className="relative w-full md:w-1/3 h-48 rounded-xl overflow-hidden shadow-lg border-4 border-background">
-          <Image 
-            src="/images/dashboard_hero_1782323582441.png"
-            alt="Dashboard Welcome"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
+
+        {/* Verification Status Pill */}
+        {isArtisan && (
+          <div className="shrink-0">
+            {data?.verificationStatus === 'VERIFIED' ? (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-xs font-bold">
+                <ShieldCheck className="w-4 h-4" /> Ghana Card Verified
+              </div>
+            ) : (
+              <Link href="/dashboard/identity" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/20 transition-colors">
+                <AlertCircle className="w-4 h-4" /> Identity Verification Needed
+              </Link>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+      {/* 4 Primary Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Stat 1 */}
+        <Card className="rounded-none border border-border/70 bg-card shadow-sm hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {stats?.stat1Label || 'Total Requests'}
+            </CardTitle>
+            <Briefcase className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No requests yet</p>
+            <div className="text-2xl sm:text-3xl font-black text-foreground">
+              {stats?.stat1Value ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats?.stat1Sub}
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        {/* Stat 2 */}
+        <Card className="rounded-none border border-border/70 bg-card shadow-sm hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {stats?.stat2Label || 'Active Jobs'}
+            </CardTitle>
+            <Clock className="w-4 h-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No active jobs</p>
+            <div className="text-2xl sm:text-3xl font-black text-foreground">
+              {stats?.stat2Value ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats?.stat2Sub}
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+        {/* Stat 3 */}
+        <Card className="rounded-none border border-border/70 bg-card shadow-sm hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {stats?.stat3Label || 'Completed'}
+            </CardTitle>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Jobs completed</p>
+            <div className="text-2xl sm:text-3xl font-black text-foreground">
+              {stats?.stat3Value ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats?.stat3Sub}
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Favorites</CardTitle>
-            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+        {/* Stat 4 */}
+        <Card className="rounded-none border border-border/70 bg-card shadow-sm hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {stats?.stat4Label || 'Escrow Volume'}
+            </CardTitle>
+            <Wallet className="w-4 h-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Saved artisans</p>
+            <div className="text-2xl sm:text-3xl font-black text-primary">
+              {stats?.stat4Value || 'GHS 0.00'}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats?.stat4Sub}
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-full lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest job requests and status updates.</CardDescription>
+      {/* Quick Action Bar */}
+      <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/30 border border-border/60">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-2">
+          Quick Actions:
+        </span>
+
+        {isArtisan ? (
+          <>
+            <Link href="/dashboard/requests">
+              <Button size="sm" variant="outline" className="rounded-none text-xs font-bold cursor-pointer">
+                <FileText className="w-3.5 h-3.5 mr-1.5" /> View Incoming Requests
+              </Button>
+            </Link>
+            <Link href="/dashboard/identity">
+              <Button size="sm" variant="outline" className="rounded-none text-xs font-bold cursor-pointer">
+                <ShieldCheck className="w-3.5 h-3.5 mr-1.5 text-primary" /> Ghana Card Verification
+              </Button>
+            </Link>
+            <Link href="/dashboard/profile">
+              <Button size="sm" variant="outline" className="rounded-none text-xs font-bold cursor-pointer">
+                <Wrench className="w-3.5 h-3.5 mr-1.5" /> Profile &amp; Services
+              </Button>
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link href="/artisans">
+              <Button size="sm" className="rounded-none text-xs font-bold cursor-pointer">
+                <Search className="w-3.5 h-3.5 mr-1.5" /> Find Verified Artisans
+              </Button>
+            </Link>
+            <Link href="/dashboard/requests/new">
+              <Button size="sm" variant="outline" className="rounded-none text-xs font-bold cursor-pointer">
+                <PlusCircle className="w-3.5 h-3.5 mr-1.5" /> Post Service Request
+              </Button>
+            </Link>
+            <Link href="/services">
+              <Button size="sm" variant="ghost" className="rounded-none text-xs font-bold cursor-pointer">
+                Browse Service Rates <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </Link>
+          </>
+        )}
+      </div>
+
+      {/* Recent Activity Grid */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        <Card className="lg:col-span-8 rounded-none border border-border/70 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border/60 pb-4">
+            <div>
+              <CardTitle className="text-base font-bold uppercase tracking-wide">
+                Recent Service Requests
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {recent.length > 0 ? `Showing your latest ${recent.length} request(s).` : 'No requests on record.'}
+              </p>
+            </div>
+            <Link href="/dashboard/requests" className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer">
+              View All <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <svg className="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <p className="text-sm">No activity yet. Start by finding an artisan!</p>
+          <CardContent className="p-0">
+            {recent.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center space-y-3">
+                <FileText className="w-10 h-10 text-muted-foreground/40" />
+                <p className="text-sm font-semibold text-foreground">No recent requests found</p>
+                <p className="text-xs text-muted-foreground max-w-sm">
+                  {isArtisan 
+                    ? 'When customers in your area request your skills, they will appear here.'
+                    : 'Get started by browsing verified plumbers, electricians, carpenters, or mechanics in Accra.'}
+                </p>
+                {!isArtisan && (
+                  <Link href="/artisans">
+                    <Button size="sm" className="rounded-none text-xs font-bold mt-2 cursor-pointer">
+                      Browse Directory
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="divide-y divide-border/60">
+                {recent.map((req) => (
+                  <Link 
+                    key={req.id} 
+                    href={`/dashboard/requests/${req.id}`}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-muted/40 transition-colors gap-3 block group"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                          {req.title}
+                        </h4>
+                        {getStatusBadge(req.status)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {isArtisan ? 'From Customer:' : 'Assigned Artisan:'}{' '}
+                        <strong className="text-foreground">{req.counterpartName}</strong> · {req.trade}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:justify-end gap-4 text-xs shrink-0">
+                      {req.amount && (
+                        <span className="font-black text-foreground">
+                          GHS {req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
+                      <span className="text-muted-foreground text-[11px]">
+                        {new Date(req.createdAt).toLocaleDateString()}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Right Info Box */}
+        <Card className="lg:col-span-4 rounded-none border border-border/70 shadow-sm bg-muted/20">
+          <CardHeader className="border-b border-border/60 pb-4">
+            <CardTitle className="text-base font-bold uppercase tracking-wide flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-primary" />
+              Escrow Protection
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-5 space-y-4 text-xs text-muted-foreground leading-relaxed">
+            <div className="space-y-1">
+              <p className="font-bold text-foreground">How your payments are guarded</p>
+              <p>
+                When a quote is accepted, funds are held securely in escrow. Payments are only released to the artisan once the job is inspected and approved.
+              </p>
+            </div>
+
+            <div className="p-3 bg-card border border-border/60 space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-foreground">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Fair Resolution Protocol</span>
+              </div>
+              <p className="text-[11px]">
+                In the rare case of an issue, AI mediation and admin review step in to ensure unbiased fairness.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <Link href="/terms" className="text-primary hover:underline font-bold inline-flex items-center gap-1">
+                View Escrow Terms <ExternalLink className="w-3 h-3" />
+              </Link>
             </div>
           </CardContent>
         </Card>
-
-        <Card className="col-span-full lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Get started with these common tasks.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <button className="w-full flex items-center rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors">
-              <svg className="mr-2 h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              Find an Artisan
-            </button>
-            <button className="w-full flex items-center rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors">
-              <svg className="mr-2 h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-              Create a Request
-            </button>
-            <button className="w-full flex items-center rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors">
-              <svg className="mr-2 h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              Edit Profile
-            </button>
-          </CardContent>
-        </Card>
       </div>
+
     </div>
   );
 }

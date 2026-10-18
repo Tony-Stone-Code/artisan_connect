@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DisputeResolutionPanel } from '@/components/admin/DisputeResolutionPanel';
 import { Badge } from '@/components/ui/Badge';
+import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDisputesPage() {
@@ -11,11 +12,13 @@ export default async function AdminDisputesPage() {
 
   if (!user) redirect('/auth/login');
 
-  const admin = await prisma.adminProfile.findUnique({
-    where: { user_id: user.id }
+  const admin = await prisma.adminProfile.findFirst({
+    where: { user: { supabase_uid: user.id } }
   });
 
-  if (!admin) redirect('/dashboard'); // Not an admin
+  const isAdminRole = user.user_metadata?.role === 'ADMIN' || user.user_metadata?.role === 'SUPERADMIN';
+
+  if (!admin && !isAdminRole) redirect('/dashboard'); // Not an admin
 
   // Fetch all reports of type REQUEST
   const reports = await prisma.report.findMany({
@@ -58,8 +61,8 @@ export default async function AdminDisputesPage() {
                   Filed by {report.reporter.first_name} {report.reporter.last_name} on {new Date(report.created_at).toLocaleDateString()}
                 </p>
               </div>
-              <Link href={`/dashboard/requests/${report.target_id}`} target="_blank" className="text-primary hover:underline text-sm font-medium">
-                View Original Request ↗
+              <Link href={`/dashboard/requests/${report.target_id}`} target="_blank" className="text-primary hover:underline text-sm font-medium inline-flex items-center gap-1">
+                View Original Request <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             
