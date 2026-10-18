@@ -201,7 +201,7 @@ export default async function RequestDetailsPage({ params }: { params: Promise<{
       <div className="lg:col-span-2">
         <ChatBox 
           requestId={request.id} 
-          currentUserId={user.id} 
+          currentUserId={isCustomer ? request.customer.user.id : request.artisan.user.id} 
           initialMessages={messages || []} 
         />
       </div>

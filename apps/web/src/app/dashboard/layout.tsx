@@ -7,6 +7,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase/client';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { MessageBadge } from '@/components/notifications/MessageBadge';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { 
   LayoutDashboard, 
   ClipboardList, 
@@ -243,6 +244,7 @@ export default function DashboardLayout({
           </button>
 
           <div className="flex flex-1 items-center justify-end space-x-3">
+            <NotificationBell />
             <ThemeToggle />
             <div className="flex items-center space-x-3 bg-muted/60 p-1.5 pr-3 border border-border/80">
               <div className="h-8 w-8 bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs shrink-0">

@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { createNotification } from './notifications'
 
 export async function createQuote(data: {
   request_id: string
@@ -15,13 +16,15 @@ export async function createQuote(data: {
   if (!user) return { error: 'Unauthorized' }
 
   const artisan = await prisma.artisanProfile.findFirst({
-    where: { user: { supabase_uid: user.id } }
+    where: { user: { supabase_uid: user.id } },
+    include: { user: true }
   })
 
   if (!artisan) return { error: 'Artisan profile not found' }
 
   const request = await prisma.serviceRequest.findUnique({
-    where: { id: data.request_id }
+    where: { id: data.request_id },
+    include: { customer: { include: { user: true } } }
   })
 
   if (!request) return { error: 'Service request not found' }
@@ -53,6 +56,15 @@ export async function createQuote(data: {
       expires_at: expiresAt
     }
   })
+
+  // Realtime in-app notification to Customer
+  await createNotification({
+    userId: request.customer.user_id,
+    title: 'New Quote Received',
+    message: `${artisan.user.first_name} sent a quote of GHS ${data.amount} for "${request.title}"`,
+    type: 'INFO',
+    data: { requestId: request.id, quoteId: quote.id },
+  })
   
   revalidatePath(`/dashboard/requests/${data.request_id}`)
   return { success: true, quote }
@@ -65,7 +77,10 @@ export async function rejectQuote(quoteId: string) {
 
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
-    include: { request: { include: { customer: { include: { user: true } } } } }
+    include: {
+      artisan: true,
+      request: { include: { customer: { include: { user: true } } } }
+    }
   })
 
   if (!quote) return { error: 'Quote not found' }
@@ -78,6 +93,15 @@ export async function rejectQuote(quoteId: string) {
   await prisma.quote.update({
     where: { id: quoteId },
     data: { status: 'REJECTED' }
+  })
+
+  // Realtime in-app notification to Artisan
+  await createNotification({
+    userId: quote.artisan.user_id,
+    title: 'Quote Declined',
+    message: `${quote.request.customer.user.first_name} declined your quote for "${quote.request.title}"`,
+    type: 'WARNING',
+    data: { requestId: quote.request_id, quoteId },
   })
 
   revalidatePath(`/dashboard/requests/${quote.request_id}`)

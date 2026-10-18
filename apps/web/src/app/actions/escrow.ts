@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { createNotification } from './notifications'
 
 // Note: In production, this would integrate with Paystack/Stripe.
 // We are simulating the successful payment by directly creating the EscrowPayment.
@@ -13,7 +14,10 @@ export async function acceptQuoteAndPayEscrow(quoteId: string) {
 
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
-    include: { request: { include: { customer: { include: { user: true } } } } }
+    include: {
+      artisan: true,
+      request: { include: { customer: { include: { user: true } } } }
+    }
   })
 
   if (!quote) return { error: 'Quote not found' }
@@ -51,6 +55,16 @@ export async function acceptQuoteAndPayEscrow(quoteId: string) {
     ])
 
     revalidatePath(`/dashboard/requests/${quote.request_id}`)
+
+    // Realtime in-app notification to Artisan
+    await createNotification({
+      userId: quote.artisan.user_id,
+      title: 'Escrow Funded & Work Authorized',
+      message: `${quote.request.customer.user.first_name} paid GHS ${quote.amount} into Escrow for "${quote.request.title}". You may begin work!`,
+      type: 'SUCCESS',
+      data: { requestId: quote.request_id, quoteId: quote.id, amount: quote.amount },
+    })
+
     return { success: true }
   } catch (err: any) {
     console.error('Escrow Payment Failed:', err)
@@ -67,6 +81,7 @@ export async function releaseEscrow(requestId: string) {
     where: { id: requestId },
     include: { 
       customer: { include: { user: true } },
+      artisan: { include: { user: true } },
       quotes: {
         where: { status: 'ACCEPTED' },
         include: { escrow: true }
@@ -94,6 +109,15 @@ export async function releaseEscrow(requestId: string) {
       status: 'RELEASED',
       released_at: new Date()
     }
+  })
+
+  // Realtime in-app notification to Artisan
+  await createNotification({
+    userId: request.artisan.user_id,
+    title: 'Payment Released!',
+    message: `${request.customer.user.first_name} confirmed completion. GHS ${acceptedQuote.amount} has been released from escrow!`,
+    type: 'SUCCESS',
+    data: { requestId, amount: acceptedQuote.amount },
   })
 
   revalidatePath(`/dashboard/requests/${requestId}`)

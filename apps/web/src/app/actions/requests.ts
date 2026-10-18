@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { sendNewRequestEmail, sendStatusUpdateEmail } from '@/lib/email'
 import { RequestStatus } from '@prisma/client'
+import { createNotification } from './notifications'
 
 export async function getRequests() {
   const supabase = await createClient()
@@ -97,6 +98,15 @@ export async function createRequest(data: {
     request.title
   )
 
+  // Realtime in-app notification to Artisan
+  await createNotification({
+    userId: request.artisan.user_id,
+    title: 'New Service Request',
+    message: `${request.customer.user.first_name} requested your service for "${request.title}"`,
+    type: 'INFO',
+    data: { requestId: request.id },
+  })
+
   revalidatePath('/dashboard/requests')
   return { success: true }
 }
@@ -187,6 +197,17 @@ export async function updateRequestStatus(id: string, status: RequestStatus) {
     updatedRequest.title,
     status
   )
+
+  // Realtime in-app notification to recipient
+  const recipientUserId = isArtisan ? updatedRequest.customer.user_id : updatedRequest.artisan.user_id
+  const actorName = isArtisan ? updatedRequest.artisan.user.first_name : updatedRequest.customer.user.first_name
+  await createNotification({
+    userId: recipientUserId,
+    title: `Job Status: ${status.replace('_', ' ')}`,
+    message: `${actorName} updated the status of "${updatedRequest.title}" to ${status.replace('_', ' ')}`,
+    type: status === 'COMPLETED' ? 'SUCCESS' : status === 'CANCELLED' || status === 'DISPUTED' ? 'WARNING' : 'INFO',
+    data: { requestId: updatedRequest.id, status },
+  })
 
   revalidatePath(`/dashboard/requests/${id}`)
   revalidatePath('/dashboard/requests')

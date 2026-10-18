@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { sendMessage, markMessagesAsRead } from '@/app/actions/messages';
+import { sendMessage, markMessagesAsRead, getMessages } from '@/app/actions/messages';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -27,6 +27,24 @@ export function ChatBox({ requestId, currentUserId, initialMessages }: ChatBoxPr
   const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  useEffect(() => {
+    let isMounted = true;
+    if (initialMessages && initialMessages.length > 0) {
+      setMessages(initialMessages);
+    } else {
+      getMessages(requestId)
+        .then((res) => {
+          if (isMounted && res.messages) {
+            setMessages(res.messages as Message[]);
+          }
+        })
+        .catch(console.error);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [requestId, initialMessages]);
 
   useEffect(() => {
     // Scroll to bottom on mount and when messages change
