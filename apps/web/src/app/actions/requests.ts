@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { sendNewRequestEmail, sendStatusUpdateEmail } from '@/lib/email'
 import { RequestStatus } from '@prisma/client'
 import { createNotification } from './notifications'
+import { rateLimitMutation } from '@/lib/rate-limit'
 
 export async function getRequests() {
   const supabase = await createClient()
@@ -68,6 +69,12 @@ export async function createRequest(data: {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
+
+  // Rate limit request creation to prevent spam
+  const rateLimit = await rateLimitMutation(user.id, 10, 60);
+  if (!rateLimit.success) {
+    return { error: `Too many service requests created. Please wait ${rateLimit.resetSeconds}s before creating another.` };
+  }
 
   const customer = await prisma.customerProfile.findFirst({
     where: { user: { supabase_uid: user.id } }

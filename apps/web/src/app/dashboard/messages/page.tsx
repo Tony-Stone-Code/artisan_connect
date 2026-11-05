@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getConversations } from '@/app/actions/messages';
 import { MessagesWorkspace } from '@/components/chat/MessagesWorkspace';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Messages | ArtisanConnect',
   description: 'Realtime chat and messaging with clients and verified artisans.',

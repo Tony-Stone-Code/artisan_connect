@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { generateObject } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
+import { rateLimitAi } from '@/lib/rate-limit';
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -41,9 +42,11 @@ export async function getArtisans(query?: string) {
         });
       }
 
-      // Use AI to extract semantic intent from the query
+      // Use AI to extract semantic intent from the query (with rate limit protection)
       if (process.env.GEMINI_API_KEY) {
-        try {
+        const aiLimit = await rateLimitAi(undefined, 20, 60);
+        if (aiLimit.success) {
+          try {
           const { object } = await generateObject({
             model: google('gemini-2.5-flash'),
             system: `You are an expert search assistant for a home services directory in Ghana. 
@@ -74,6 +77,7 @@ If the query is just a specific business name or person's name, return an empty 
         } catch (aiError) {
           console.error('AI intent extraction failed:', aiError);
           // Fail silently and fall back to standard text search
+        }
         }
       }
 

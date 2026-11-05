@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Loader2 } from 'lucide-react';
 
 interface ProfileLocationMapProps {

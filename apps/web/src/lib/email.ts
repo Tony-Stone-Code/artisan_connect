@@ -3,7 +3,8 @@ import prisma from '@/lib/prisma';
 
 // It is possible this is called on the edge, so gracefully degrade if RESEND_API_KEY is missing
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_EMAIL = 'ArtisanConnect <onboarding@resend.dev>'; // Using Resend's default testing domain
+const FROM_EMAIL = process.env.FROM_EMAIL || 'ArtisanConnect <onboarding@resend.dev>';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://artisanconnect.com.gh';
 
 /**
  * Logs the email attempt to the database
@@ -35,7 +36,7 @@ export async function sendCustomerWelcomeEmail(to: string, firstName: string) {
       <h2 style="color: #2563eb;">Welcome to ArtisanConnect, ${firstName}!</h2>
       <p>We are thrilled to have you on board. Finding trusted, verified artisans in Ghana has never been easier.</p>
       <p>Whether you need a quick plumbing fix, some electrical work, or a major carpentry project, our professionals are ready to help.</p>
-      <a href="http://localhost:3000/artisans" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 10px;">Find an Artisan</a>
+      <a href="${APP_URL}/artisans" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 10px;">Find an Artisan</a>
       <p style="margin-top: 30px; font-size: 14px; color: #666;">- The ArtisanConnect Team</p>
     </div>
   `;
@@ -73,7 +74,7 @@ export async function sendArtisanWelcomeEmail(to: string, firstName: string) {
         <h3 style="margin-top: 0; color: #991b1b;">Action Required: Verify Your Identity</h3>
         <p style="color: #7f1d1d; margin-bottom: 0;">To appear in customer search results and receive jobs, you must verify your identity. Please log in to your dashboard and upload your Ghana Card and a selfie.</p>
       </div>
-      <a href="http://localhost:3000/dashboard/profile" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Verify Identity Now</a>
+      <a href="${APP_URL}/dashboard/profile" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Verify Identity Now</a>
       <p style="margin-top: 30px; font-size: 14px; color: #666;">- The ArtisanConnect Team</p>
     </div>
   `;
@@ -111,7 +112,7 @@ export async function sendNewRequestEmail(to: string, artisanName: string, custo
         <p style="margin: 0;"><strong>Job Title:</strong> ${jobTitle}</p>
       </div>
       <p>Please log in to your dashboard to review the request, chat with the customer, and provide a quote.</p>
-      <a href="http://localhost:3000/dashboard/requests" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View Request</a>
+      <a href="${APP_URL}/dashboard/requests" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View Request</a>
     </div>
   `;
 
@@ -147,7 +148,7 @@ export async function sendStatusUpdateEmail(to: string, customerName: string, ar
         <p style="margin: 0;"><strong>Job Title:</strong> ${jobTitle}</p>
         <p style="margin: 10px 0 0 0;"><strong>New Status:</strong> <span style="background-color: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${status}</span></p>
       </div>
-      <a href="http://localhost:3000/dashboard/requests" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View Dashboard</a>
+      <a href="${APP_URL}/dashboard/requests" style="display: inline-block; background-color: #2563eb; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View Dashboard</a>
     </div>
   `;
 

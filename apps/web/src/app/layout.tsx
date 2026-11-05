@@ -1,11 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://artisanconnect.com.gh';
+
+export const viewport: Viewport = {
+  themeColor: '#002B49',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://artisan-connect.netlify.app'),
+  metadataBase: new URL(siteUrl),
   title: {
     template: '%s | ArtisanConnect',
     default: 'ArtisanConnect - Find Trusted Professionals in Ghana',
@@ -14,10 +23,16 @@ export const metadata: Metadata = {
   keywords: ['artisan', 'professional services', 'Ghana', 'plumber', 'electrician', 'carpenter', 'hire', 'escrow', 'trusted'],
   authors: [{ name: 'GammaCube' }],
   creator: 'GammaCube',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'ArtisanConnect',
+  },
   openGraph: {
     title: 'ArtisanConnect - Find Trusted Professionals',
     description: 'The easiest way to find and hire verified plumbers, electricians, carpenters, and other skilled professionals across Ghana.',
-    url: 'https://artisan-connect.netlify.app',
+    url: siteUrl,
     siteName: 'ArtisanConnect',
     images: [
       {
@@ -57,6 +72,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.25.0/mapbox-gl.css" />
+      </head>
       <body className="min-h-full flex flex-col transition-colors duration-300">
         <ThemeProvider
           attribute="class"

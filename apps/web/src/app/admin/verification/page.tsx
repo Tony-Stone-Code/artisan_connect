@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { getPendingIdentities, approveIdentity, rejectIdentity } from '@/app/actions/identity';
 import { Button } from '@/components/ui/Button';

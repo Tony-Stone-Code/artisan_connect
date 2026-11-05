@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { generateText } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { rateLimitAi, rateLimitMutation } from '@/lib/rate-limit'
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
@@ -14,6 +15,12 @@ export async function createDispute(requestId: string, reason: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
+
+  // Rate limit dispute filing to prevent spam/abuse
+  const rateLimit = await rateLimitMutation(user.id, 5, 60);
+  if (!rateLimit.success) {
+    return { error: `Too many dispute requests. Please wait ${rateLimit.resetSeconds}s before submitting again.` };
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: { supabase_uid: user.id }
@@ -85,6 +92,12 @@ export async function generateDisputeSummary(reportId: string) {
     where: { user: { supabase_uid: user.id } }
   })
   if (!admin) return { error: 'Forbidden' }
+
+  // Rate limit AI calls to protect quota and control costs
+  const rateLimit = await rateLimitAi(user.id, 10, 60);
+  if (!rateLimit.success) {
+    return { error: `AI rate limit reached. Please wait ${rateLimit.resetSeconds}s before generating another summary.` };
+  }
 
   const report = await prisma.report.findUnique({
     where: { id: reportId }
