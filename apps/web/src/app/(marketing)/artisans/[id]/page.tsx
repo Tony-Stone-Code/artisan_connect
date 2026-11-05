@@ -25,9 +25,33 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!artisan || !artisan.user) return { title: 'Artisan Not Found' };
   
   const displayName = artisan.business_name || `${artisan.user.first_name} ${artisan.user.last_name}`;
+  const primaryService = artisan.services?.[0]?.subcategory?.category?.name || 'Artisan';
+  const description = artisan.bio || `Hire ${displayName}, a verified ${primaryService.toLowerCase()} professional in Ghana on ArtisanConnect with biometric verification and escrow payment protection.`;
+  const media = getTradeMedia(primaryService);
+  const previewImage = artisan.user.avatar_url || media.coverUrl || '/og-image.png';
+
   return {
-    title: `${displayName} | ArtisanConnect`,
-    description: artisan.bio || `Hire ${displayName} on ArtisanConnect.`,
+    title: `${displayName} - Verified ${primaryService} in Ghana | ArtisanConnect`,
+    description,
+    openGraph: {
+      title: `${displayName} - Verified ${primaryService} | ArtisanConnect`,
+      description,
+      type: 'profile',
+      images: [
+        {
+          url: previewImage,
+          width: 800,
+          height: 800,
+          alt: `${displayName} - ${primaryService}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${displayName} - Verified ${primaryService}`,
+      description,
+      images: [previewImage],
+    },
   };
 }
 
