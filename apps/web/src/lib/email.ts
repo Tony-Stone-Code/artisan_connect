@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 // It is possible this is called on the edge, so gracefully degrade if RESEND_API_KEY is missing
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'ArtisanConnect <onboarding@resend.dev>';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://artisanconnect.com.gh';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://artisan-connect-mvp.vercel.app');
 
 /**
  * Logs the email attempt to the database

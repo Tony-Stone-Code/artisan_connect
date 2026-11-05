@@ -5,7 +5,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
-  const domain = (process.env.NEXT_PUBLIC_APP_URL || 'https://artisanconnect.com.gh').replace(/^https?:\/\//, '');
+  const rawUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://artisan-connect-mvp.vercel.app');
+  const domain = rawUrl.replace(/^https?:\/\//, '');
 
   return new ImageResponse(
     (

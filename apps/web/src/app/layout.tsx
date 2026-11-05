@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://artisanconnect.com.gh';
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://artisan-connect-mvp.vercel.app');
 
 export const viewport: Viewport = {
   themeColor: '#002B49',

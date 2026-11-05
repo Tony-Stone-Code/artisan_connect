@@ -162,14 +162,14 @@ const svg = `
     <!-- Bottom Footer Row -->
     <g transform="translate(0, 445)">
       <!-- Domain Pill -->
-      <rect width="260" height="44" rx="10" fill="rgba(0, 43, 73, 0.8)" stroke="#F59E0B" stroke-width="1.5" />
-      <text x="130" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="17" fill="#FFFFFF" text-anchor="middle">
-        artisanconnect.com.gh
+      <rect width="310" height="44" rx="10" fill="rgba(0, 43, 73, 0.8)" stroke="#F59E0B" stroke-width="1.5" />
+      <text x="155" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="16" fill="#FFFFFF" text-anchor="middle">
+        artisan-connect-mvp.vercel.app
       </text>
 
       <!-- Regions list -->
-      <text x="300" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="16" fill="#64748B">
-        Available in Greater Accra • Ashanti • Central • Western • Nationwide
+      <text x="340" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="15" fill="#64748B">
+        Greater Accra • Ashanti • Central • Western • Nationwide
       </text>
 
       <!-- Trust Rating -->
