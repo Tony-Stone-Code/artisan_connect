@@ -14,16 +14,22 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['business', 'productivity', 'utilities'],
     icons: [
       {
-        src: '/icon.png',
+        src: '/icons/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'maskable',
+        purpose: 'any',
       },
       {
-        src: '/icon.png',
+        src: '/icons/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
+      },
+      {
+        src: '/icons/icon-maskable.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
     shortcuts: [
@@ -32,21 +38,21 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: 'Find',
         description: 'Search verified artisans across Accra, Kumasi, and all regions',
         url: '/artisans',
-        icons: [{ src: '/icon.png', sizes: '192x192' }],
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
       },
       {
         name: 'My Job Requests',
         short_name: 'Requests',
         description: 'View your ongoing and quoted service requests',
         url: '/dashboard/requests',
-        icons: [{ src: '/icon.png', sizes: '192x192' }],
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
       },
       {
         name: 'Live Messages',
         short_name: 'Messages',
         description: 'Chat in realtime with your artisans and customers',
         url: '/dashboard/messages',
-        icons: [{ src: '/icon.png', sizes: '192x192' }],
+        icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }],
       },
     ],
   };
